@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{% if storylet %}
+  {{m.area_header(area, root_url)}}
+  <div class="section">
+    <div class="section-side">
+      <div class="section-icon section-icon-border section-icon-white">
+        <img src="{{storylet.image}}" alt="{{storylet.name}}" height=120 />
+      </div>
+    </div>
+    <div class="section-body">
+      <h2>{{storylet.name|unknown|safe}}</h2>
+      <p>{{storylet.description|unknown|safe}}</p>
+    </div>
+  </div>
+  {% for branch in storylet.branches %}
+    {{ m.section(title=branch.name, description=branch.description, image=branch.image, button_text=branch.button_text, link=branch.url(area.id)|format_url, challenges=branch.challenges, quality_requirements=branch.quality_requirements, action_cost=branch.action_cost, indented=True, disabled=not branch.outcome_observations) }}
+  {% endfor %}
+{% else %}
+  <p><em>Data for this storylet is not available yet.</em></p>
+{% endif %}
+<hr />
+<div class="buttons-group">
+  {% if area %}
+    <a href="{{area.url|format_url}}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to {{area.name}}</a>
+  {% else %}
+    <a href="{{''|format_url}}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Perhaps Not</a>
+  {% endif %}
+</div>
+{% endblock %}

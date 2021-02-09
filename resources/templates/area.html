@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{% if area %}
+  {{m.area_header(area, root_url)}}
+  {% for setting in settings.values() %}
+    <h3>{{setting.name}}</h3>
+    {% for storylet in setting.storylets %}
+      {{ m.section(title=storylet.name, description=storylet.teaser, image=storylet.image, button_text="Go", link=storylet.url(area.id)|format_url, quality_requirements=storylet.quality_requirements, icon_border=storylet.color, disabled=not storylet.description) }}
+    {% endfor %}
+    <hr />
+  {% endfor %}
+{% else %}
+  <p><em>Data for this area is not available yet.</em></p>
+{% endif %}
+  <div class="buttons-group">
+    <a href="{{'/areas'|format_url}}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Perhaps Not</a>
+  </div>
+{% endblock %}

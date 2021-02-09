@@ -1,0 +1,55 @@
+{% macro section(title, description, image, button_text, link, challenges=None, quality_requirements=None, action_cost=1, icon_border=None, indented=False, disabled=False) -%}
+  <div class="section section-flex {% if indented %}section-indented{% endif %}">
+    <div class="section-side">
+      <div class="section-icon {% if icon_border %}section-icon-border section-icon-{{icon_border|lower}}{% endif %}">
+        <a {% if not disabled %}href="{{link}}"{% endif %}><img src="{{image}}" alt="Card" height=99 /></a>
+      </div>
+    </div>
+    <div class="section-body section-body-spaced">
+      <div>
+        <h3>{{title|unknown|safe}}</h3>
+        <p>{{description|unknown|safe}}</p>
+      </div>
+      {% if challenges %}
+      <div class="challenges">
+        {% for challenge in challenges %}
+        <div class="challenge">
+          <div class="icon challenge-icon">
+            <img src="{{challenge.image}}" alt="{{challenge.name}}" />
+          </div>
+          <div class="challenge-body">
+            <div class="challenge-description">{{challenge.description|safe}}</div>
+            Your {{challenge.name}} quality gives you a {{challenge.target}}% chance of success.
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="buttons-group">
+        <a href="{{link}}" class="section-btn btn btn-primary {% if disabled %}disabled{% endif %}">
+          {{button_text}}
+          {% if action_cost != 1 %}<span class="action-cost">({{action_cost}})</span>{% endif %}
+        </a>
+        {% if quality_requirements %}
+          {% for qr in quality_requirements|reverse %}
+            <div class="icon" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{qr.summary|safe}}">
+              <img src="{% if qr.image %}{{qr.image}}{% else %}https://images.fallenlondon.com/images/icons_small/question.png{% endif %}" alt="{{qr.quality.name}}" />
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro area_header(area, root_url) -%}
+{% if area %}
+  <a href="{{root_url + area.url}}">
+    <h2 class="h2-title">{{area.name}}</h2>
+    {% if area.image %}
+      <img src="{{area.image}}" alt="{{area.name}}" style="width: 100%;" />
+    {% endif %}
+  </a>
+  <hr />
+{% endif %}
+{%- endmacro %}

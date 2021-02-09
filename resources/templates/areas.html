@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Areas</h2>
+{% for area in areas %}
+<div class="section section-flex">
+  <div class="section-side">
+    <div class="section-icon">
+      {% if area.image %}
+        <img src="{{area.image}}" alt="{{area.name}}" class="storylet-icon-image" height=99 />
+      {% else %}
+        <div style="background-color: #1d1d1d; height: 99px; width: 543px;"></div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="section-body section-body-spaced">
+    <div>
+      <h3>{{area.name}}</h3>
+      <p>{{area.description}}</p>
+    </div>
+    <div class="buttons-group">
+      <a href="{{area.url|format_url}}" class="section-btn btn btn-primary">Go</a>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% if not areas %}
+<p><em>No areas have been discovered yet.</em></p>
+{% endif %}
+{% endblock %}

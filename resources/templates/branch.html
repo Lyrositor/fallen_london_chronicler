@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block content %}
+{% if branch %}
+  {{m.area_header(area, root_url)}}
+  {% for outcome in branch.outcome_observations %}
+    <div class="section">
+      <div class="section-side">
+        <div class="section-icon section-icon-border section-icon-white">
+          <img src="{{outcome.image}}" alt="{{outcome.name}}" height=120 />
+        </div>
+      </div>
+      <div class="section-body">
+        <div>
+          {% if outcome.name %}
+            <h2>{{outcome.name|safe}}</h2>
+          {% elif outcome.redirect %}
+            <h2>Redirect to <em>{{outcome.redirect.name}}</em></h2>
+          {% endif %}
+          {% if outcome.description %}
+            {{outcome.description|safe}}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% if outcome.messages %}
+      <div class="section section-indented">
+        <div class="section-body section-body-spaced">
+          {% for message in outcome.messages %}
+            <div class="outcome-message">
+              <div class="outcome-message-icon">
+                <div class="icon">
+                  <img src="{% if message.image %}{{message.image}}{% else %}https://images.fallenlondon.com/images/icons_small/question.png{% endif %}" alt="{{outcome.name}}" height="40" width="40" />
+                </div>
+              </div>
+              <div class="outcome-message-body">
+                {{message.text|safe}}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+      <div class="buttons-group branch-exit">
+    {% if outcome.redirect %}
+      <a href="{{outcome.redirect.url(outcome.redirect_area.id if outcome.redirect_area else area.id)|format_url}}" class="btn btn-primary">Onwards</a>
+    {% elif outcome.redirect_branch %}
+      <a href="{{outcome.redirect_branch.url(outcome.redirect_area.id if outcome.redirect_area else area.id)|format_url}}" class="btn btn-primary">Onwards</a>
+    {% elif outcome.redirect_area %}
+      <a href="{{outcome.redirect_area.url|format_url}}" class="btn btn-primary">Onwards</a>
+    {% else %}
+      <a href="{{area.url|format_url}}" class="btn btn-primary">Onwards</a>
+    {% endif %}
+    </div>
+    <hr />
+  {% endfor %}
+  {% if not branch.outcome_observations %}
+    <p><em>No outcomes have been logged for this branch yet.</em></p>
+  {% endif %}
+{% else %}
+  <p><em>Data for this branch is not available yet.</em></p>
+{% endif %}
+<div class="buttons-group">
+  {% if branch %}
+    <a href="{{branch.storylet.url(area.id)|format_url}}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to {{branch.storylet.name}}</a>
+  {% else %}
+    <a href="{{''|format_url}}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Perhaps Not</a>
+  {% endif %}
+</div>
+{% endblock %}
