@@ -9,6 +9,8 @@ The **Fallen London Chronicler** is a software tool for recording local sessions
 
 ![Screenshot](https://user-images.githubusercontent.com/1495312/107299258-394e0900-6a77-11eb-92f1-d66ddc6e6e6c.png)
 
+**Disclaimer:** Fallen London is the sole property of Failbetter Games Ltd. This tool is intended for local use only; do not distribute game content without permission from Failbetter Games.
+
 ## Usage
 
 The Fallen London Chronicler works by passively monitoring a local, ongoing Fallen London session. It does so through two components:
