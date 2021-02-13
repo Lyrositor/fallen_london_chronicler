@@ -148,7 +148,7 @@ credentials.cache
 credentials.json
 
 # Export
-export/
+/export/
 
 # Config
 config.env
