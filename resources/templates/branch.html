@@ -2,12 +2,12 @@
 {% import "macros.html" as m %}
 {% block content %}
 {% if branch %}
-  {{m.area_header(area, root_url)}}
+  {{m.area_header(area)}}
   {% for outcome in branch.outcome_observations %}
     <div class="section">
       <div class="section-side">
         <div class="section-icon section-icon-border section-icon-white">
-          <img src="{{outcome.image}}" alt="{{outcome.name}}" height=120 />
+          <img src="{{outcome.image|format_image_url}}" alt="{{outcome.name}}" height=120 />
         </div>
       </div>
       <div class="section-body">
@@ -30,7 +30,7 @@
             <div class="outcome-message">
               <div class="outcome-message-icon">
                 <div class="icon">
-                  <img src="{% if message.image %}{{message.image}}{% else %}https://images.fallenlondon.com/images/icons_small/question.png{% endif %}" alt="{{outcome.name}}" height="40" width="40" />
+                  <img src="{% if message.image %}{{message.image|format_image_url}}{% else %}{{'/icons_small/question.png'|format_image_url}}{% endif %}" alt="{{outcome.name}}" height="40" width="40" />
                 </div>
               </div>
               <div class="outcome-message-body">

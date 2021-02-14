@@ -6,7 +6,7 @@
   <div class="section-side">
     <div class="section-icon">
       {% if area.image %}
-        <img src="{{area.image}}" alt="{{area.name}}" class="storylet-icon-image" height=99 />
+        <img src="{{area.image|format_image_url}}" alt="{{area.name}}" class="storylet-icon-image" height=99 />
       {% else %}
         <div style="background-color: #1d1d1d; height: 99px; width: 543px;"></div>
       {% endif %}

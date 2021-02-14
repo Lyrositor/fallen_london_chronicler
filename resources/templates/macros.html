@@ -15,7 +15,7 @@
         {% for challenge in challenges %}
         <div class="challenge">
           <div class="icon challenge-icon">
-            <img src="{{challenge.image}}" alt="{{challenge.name}}" />
+            <img src="{{challenge.image|format_image_url}}" alt="{{challenge.name}}" />
           </div>
           <div class="challenge-body">
             <div class="challenge-description">{{challenge.description|safe}}</div>
@@ -33,7 +33,7 @@
         {% if quality_requirements %}
           {% for qr in quality_requirements|reverse %}
             <div class="icon" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{qr.summary|safe}}">
-              <img src="{% if qr.image %}{{qr.image}}{% else %}https://images.fallenlondon.com/images/icons_small/question.png{% endif %}" alt="{{qr.quality.name}}" />
+              <img src="{% if qr.image %}{{qr.image|format_image_url}}{% else %}{{'/icons_small/question.png'|format_image_url}}{% endif %}" alt="{{qr.quality.name}}" />
             </div>
           {% endfor %}
         {% endif %}
@@ -48,12 +48,12 @@
   </div>
 {%- endmacro %}
 
-{% macro area_header(area, root_url) -%}
+{% macro area_header(area) -%}
 {% if area %}
-  <a href="{{root_url + area.url}}">
+  <a href="{{area.url|format_url}}">
     <h2 class="h2-title">{{area.name}}</h2>
     {% if area.image %}
-      <img src="{{area.image}}" alt="{{area.name}}" style="width: 100%;" />
+      <img src="{{area.image|format_image_url}}" alt="{{area.name}}" style="width: 100%;" />
     {% endif %}
   </a>
   <hr />

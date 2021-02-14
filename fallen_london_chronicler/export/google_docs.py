@@ -10,6 +10,7 @@ from fallen_london_chronicler.db import Session
 from fallen_london_chronicler.export.base import Exporter
 from fallen_london_chronicler.google_docs import GoogleDocsService, FormattedText, \
     FormattedParagraph, NamedStyle, Alignment, BulletStyle
+from fallen_london_chronicler.images import BASE_IMAGE_URL
 from fallen_london_chronicler.model import Storylet, Branch, OutcomeObservation, \
     OutcomeMessageType, Area
 
@@ -66,7 +67,7 @@ def render_area(area: Area) -> Iterable[FormattedParagraph]:
         yield FormattedParagraph(
             alignment=Alignment.CENTER,
             text_segments=[
-                FormattedText(image=area.image),
+                _get_image(area.image),
                 FormattedText("\n")
             ],
         )
@@ -76,7 +77,7 @@ def render_storylet(storylet: Storylet) -> Iterable[FormattedParagraph]:
     name = " / ".join(set(so.name for so in storylet.observations if so.name))
     header_segments = []
     if storylet.image:
-        header_segments.append(FormattedText(image=storylet.image))
+        header_segments.append(_get_image(storylet.image))
     header_segments.extend(convert_to_formatted_text(name))
     yield FormattedParagraph(
         text_segments=header_segments,
@@ -101,7 +102,7 @@ def render_branch(branch: Branch) -> Iterable[FormattedParagraph]:
     name = " / ".join(set(bo.name for bo in branch.observations if bo.name))
     header_segments = []
     if branch.image:
-        header_segments.append(FormattedText(image=branch.image))
+        header_segments.append(_get_image(branch.image))
     header_segments.extend(convert_to_formatted_text(name))
     yield FormattedParagraph(
         text_segments=header_segments,
@@ -341,3 +342,7 @@ def _format_qty_change(min_change: int, max_change: int) -> str:
         return str(min_change)
     else:
         return f"{min_change} - {max_change}"
+
+
+def _get_image(image_str: str) -> FormattedText:
+    return FormattedText(image=BASE_IMAGE_URL + image_str)

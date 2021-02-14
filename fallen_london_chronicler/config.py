@@ -9,6 +9,7 @@ class AppConfig(BaseSettings):
     debug: bool = False
     db_url: str = "sqlite:///./fallen_london.db"
     root_url: str = f"http://localhost:{app_port}"
+    serve_cached_images: bool = True
 
     html_export_path: str = "export/html"
     html_export_url: str = ""

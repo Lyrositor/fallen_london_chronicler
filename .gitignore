@@ -153,4 +153,7 @@ credentials.json
 # Config
 config.env
 
+# Cached images
+resources/images/**/*.png
+
 fallen_london_chronicler-*.zip

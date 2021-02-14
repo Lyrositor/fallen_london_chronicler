@@ -23,7 +23,6 @@ def templated(template_file: str):
                 template_file,
                 {
                     "request": request,
-                    "root_url": config.root_url,
                     **context
                 }
             )
@@ -40,8 +39,20 @@ def format_url_filter(ctx: Context, value: str) -> str:
     )
 
 
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
-templates.env.filters["unknown"] = (
-    lambda value: value if value is not None else "<em>(Unknown)</em>"
-)
-templates.env.filters["format_url"] = format_url_filter
+@contextfilter
+def format_image_url_filter(ctx: Context, value: str) -> str:
+    return ctx.get("root_url", "") + "/images" + value
+
+
+def make_templates() -> Jinja2Templates:
+    jinja_templates = Jinja2Templates(directory=TEMPLATES_DIR)
+    jinja_templates.env.filters["unknown"] = (
+        lambda value: value if value is not None else "<em>(Unknown)</em>"
+    )
+    jinja_templates.env.filters["format_url"] = format_url_filter
+    jinja_templates.env.filters["format_image_url"] = format_image_url_filter
+    jinja_templates.env.globals["root_url"] = config.root_url
+    return jinja_templates
+
+
+templates = make_templates()

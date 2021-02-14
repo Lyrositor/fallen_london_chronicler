@@ -5,6 +5,7 @@ from typing import Iterable, List, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session
 
+from fallen_london_chronicler.images import get_or_cache_image, ImageType
 from fallen_london_chronicler.model import Area, AreaType, Storylet, \
     StoryletCategory, StoryletObservation, StoryletDistribution, \
     StoryletFrequency, StoryletUrgency, Branch, BranchObservation, Challenge, \
@@ -21,11 +22,6 @@ from fallen_london_chronicler.schema import StoryletInfo, AreaInfo, BranchInfo, 
 from fallen_london_chronicler.schema.setting import SettingInfo
 from fallen_london_chronicler.schema.storylet import CardInfo
 from fallen_london_chronicler.utils import match_any
-
-BASE_IMAGE_URL = "https://images.fallenlondon.com/images"
-AREA_IMAGE_URL = f"{BASE_IMAGE_URL}/headers/{{0}}.png"
-ICONS_URL = f"{BASE_IMAGE_URL}/icons/{{0}}.png"
-ICONS_SMALL_URL = f"{BASE_IMAGE_URL}/icons_small/{{0}}.png"
 
 TOOLTIPS_NONE = (
     re.compile(
@@ -194,8 +190,7 @@ def record_area(
     area = Area.get_or_create(session, area_info.id)
     area.name = area_info.name
     area.description = area_info.description
-    area.image = AREA_IMAGE_URL.format(area_info.image) \
-        if area_info.image else None
+    area.image = get_or_cache_image(ImageType.HEADER, area_info.image)
     area.type = AreaType(area_info.type)
     if setting_id is not None:
         setting = Setting.get_or_create(session, setting_id)
@@ -277,7 +272,7 @@ def record_storylet(
     if storylet_info.urgency is not None:
         storylet.urgency = StoryletUrgency(storylet_info.urgency)
     storylet.category = StoryletCategory(storylet_info.category)
-    storylet.image = ICONS_URL.format(storylet_info.image)
+    storylet.image = get_or_cache_image(ImageType.ICON, storylet_info.image)
     record_observation(
         storylet.observations,
         StoryletObservation,
@@ -308,7 +303,7 @@ def record_card(
 ) -> Storylet:
     storylet = Storylet.get_or_create(session, card_info.eventId)
     storylet.category = StoryletCategory(card_info.category)
-    storylet.image = ICONS_URL.format(card_info.image)
+    storylet.image = get_or_cache_image(ImageType.ICON, card_info.image)
     storylet.is_card = True
     storylet.is_autofire = card_info.isAutofire
     storylet.stickiness = StoryletStickiness(card_info.stickiness)
@@ -336,7 +331,7 @@ def record_branch(session: Session, branch_info: BranchInfo) -> Branch:
     branch = Branch.get_or_create(session, branch_info.id)
     branch.action_cost = branch_info.actionCost
     branch.button_text = branch_info.buttonText
-    branch.image = ICONS_URL.format(branch_info.image)
+    branch.image = get_or_cache_image(ImageType.ICON, branch_info.image)
     branch.ordering = branch_info.ordering
     record_observation(
         branch.observations,
@@ -364,7 +359,9 @@ def record_challenge(challenge_info: ChallengeInfo) -> Challenge:
     challenge.category = challenge_info.category
     challenge.name = challenge_info.name
     challenge.description = challenge_info.description
-    challenge.image = ICONS_SMALL_URL.format(challenge_info.image)
+    challenge.image = get_or_cache_image(
+        ImageType.ICON_SMALL, challenge_info.image
+    )
     challenge.target = challenge_info.targetNumber
     challenge.nature = ChallengeNature(challenge_info.nature)
     challenge.type = ChallengeType(challenge_info.type)
@@ -378,9 +375,9 @@ def record_quality_requirement(
 ) -> T:
     quality_requirement = cls()
     quality_requirement.game_id = quality_requirement_info.id
-    quality_requirement.image = ICONS_SMALL_URL.format(
-        quality_requirement_info.image
-    ) if quality_requirement_info.image else None
+    quality_requirement.image = get_or_cache_image(
+        ImageType.ICON_SMALL, quality_requirement_info.image
+    )
     quality_requirement.is_cost = quality_requirement_info.isCost
 
     # Copy the quality ID for diffing purposes
@@ -484,7 +481,7 @@ def record_outcome(
         OutcomeObservation,
         name=outcome_info.event.name if outcome_info else None,
         description=outcome_info.event.description if outcome_info else None,
-        image=ICONS_URL.format(outcome_info.event.image)
+        image=get_or_cache_image(ImageType.ICON, outcome_info.event.image)
         if outcome_info else branch.image,
         is_success=not any(
             om.type == OutcomeMessageType.DIFFICULTY_ROLL_FAILURE
@@ -510,7 +507,7 @@ def record_outcome_message(
     message = OutcomeMessage()
     message.type = OutcomeMessageType(info.type)
     message.text = info.message.strip()
-    message.image = ICONS_SMALL_URL.format(info.image) if info.image else None
+    message.image = get_or_cache_image(ImageType.ICON_SMALL, info.image)
 
     if info.possession:
         message.quality = record_quality(

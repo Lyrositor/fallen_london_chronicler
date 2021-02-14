@@ -10,12 +10,19 @@ from . import home
 from . import storylet
 
 STATIC_FILES_PATH = os.path.join("resources", "static")
+CACHED_IMAGES_PATH = os.path.join("resources", "images")
 
 
-def setup_web(api: FastAPI) -> None:
+def setup_web(api: FastAPI, serve_cached_images: bool) -> None:
     api.mount(
         "/static", StaticFiles(directory=STATIC_FILES_PATH), name="static"
     )
+    if serve_cached_images:
+        api.mount(
+            "/images",
+            StaticFiles(directory=CACHED_IMAGES_PATH),
+            name="images"
+        )
     api.include_router(home.router, prefix="")
     api.include_router(areas.router, prefix="/areas")
     api.include_router(area.router, prefix="/area")
