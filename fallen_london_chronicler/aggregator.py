@@ -3,6 +3,7 @@ import logging
 import re
 from typing import Iterable, List, Optional, Type, TypeVar
 
+from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
 from fallen_london_chronicler.images import get_or_cache_image, ImageType
@@ -189,7 +190,7 @@ def record_area(
 ) -> Area:
     area = Area.get_or_create(session, area_info.id)
     area.name = area_info.name
-    area.description = area_info.description
+    area.description = fix_html(area_info.description)
     area.image = get_or_cache_image(ImageType.HEADER, area_info.image)
     area.type = AreaType(area_info.type)
     if setting_id is not None:
@@ -277,8 +278,8 @@ def record_storylet(
         storylet.observations,
         StoryletObservation,
         name=storylet_info.name,
-        description=storylet_info.description,
-        teaser=storylet_info.teaser,
+        description=fix_html(storylet_info.description),
+        teaser=fix_html(storylet_info.teaser),
         quality_requirements=[
             record_quality_requirement(
                 session, StoryletQualityRequirement, quality_requirement_info
@@ -311,7 +312,7 @@ def record_card(
         storylet.observations,
         StoryletObservation,
         name=card_info.name,
-        teaser=card_info.teaser,
+        teaser=fix_html(card_info.teaser),
         quality_requirements=[
             record_quality_requirement(
                 session, StoryletQualityRequirement, quality_requirement_info
@@ -337,7 +338,7 @@ def record_branch(session: Session, branch_info: BranchInfo) -> Branch:
         branch.observations,
         BranchObservation,
         currency_cost=branch_info.currencyCost,
-        description=branch_info.description,
+        description=fix_html(branch_info.description),
         name=branch_info.name,
         challenges=[
             record_challenge(challenge_info)
@@ -358,7 +359,7 @@ def record_challenge(challenge_info: ChallengeInfo) -> Challenge:
     challenge.game_id = challenge_info.id
     challenge.category = challenge_info.category
     challenge.name = challenge_info.name
-    challenge.description = challenge_info.description
+    challenge.description = fix_html(challenge_info.description)
     challenge.image = get_or_cache_image(
         ImageType.ICON_SMALL, challenge_info.image
     )
@@ -411,7 +412,7 @@ def record_quality_requirement(
         )
     else:
         logging.error(f"Unknown tooltip: {tooltip}")
-        quality_requirement.fallback_text = tooltip
+        quality_requirement.fallback_text = fix_html(tooltip)
 
     quality_requirement.required_quantity_min = quantity_min
     quality_requirement.required_quantity_max = quantity_max
@@ -480,7 +481,9 @@ def record_outcome(
         branch.outcome_observations,
         OutcomeObservation,
         name=outcome_info.event.name if outcome_info else None,
-        description=outcome_info.event.description if outcome_info else None,
+        description=fix_html(
+            outcome_info.event.description if outcome_info else None
+        ),
         image=get_or_cache_image(ImageType.ICON, outcome_info.event.image)
         if outcome_info else branch.image,
         is_success=not any(
@@ -567,6 +570,8 @@ def record_outcome_message(
             " (Simple challenges mean you don't learn so much.)", ""
         )
 
+    message.text = fix_html(message.text)
+
     if change is not None and change != message.change:
         logging.warning(
             f"Calculated changed ({message.change}) does not match parsed "
@@ -574,3 +579,7 @@ def record_outcome_message(
         )
 
     return message
+
+
+def fix_html(text: Optional[str]) -> Optional[str]:
+    return str(BeautifulSoup(text, "html.parser")) if text is not None else None
