@@ -348,10 +348,11 @@ a:hover, a:active, a:focus {
     border: 2px solid #3e3e3e;
     color: #efefef;
     font-size: 14px !important;
+    margin-top: 0.5rem;
     max-width: 300px;
     opacity: 1 !important;
     padding: .5rem;
-    text-align: justify;
+    text-align: left;
 }
 
 .tooltip-arrow {
@@ -360,4 +361,11 @@ a:hover, a:active, a:focus {
 
 .tooltip-icon {
     margin-right: 1rem;
+}
+
+.tooltip-title {
+    font-weight: bold;
+}
+
+.tooltip-description {
 }

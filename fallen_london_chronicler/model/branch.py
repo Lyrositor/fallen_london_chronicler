@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import Integer, Column, ForeignKey, String, DateTime, func
 from sqlalchemy.orm import relationship
@@ -59,7 +60,7 @@ class Branch(GameEntity):
         return latest_observation_property(self.observations, "challenges")
 
     @property
-    def quality_requirements(self) -> str:
+    def quality_requirements(self) -> List:
         return latest_observation_property(
             self.observations, "quality_requirements"
         )

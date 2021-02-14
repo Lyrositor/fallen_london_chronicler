@@ -44,7 +44,9 @@
 
 {% macro card(title, description, image, link, quality_requirements, icon_border) -%}
   <div class="card section-icon {% if icon_border %}section-icon-border section-icon-{{icon_border|lower}}{% endif %}">
-    <a href="{{link}}"><img src="{{image}}" alt="Card" height=99 /></a>
+    <a href="{{link}}" style="display: block" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<div class='tooltip-title'>{{title|safe}}</div><div class='tooltip-description'>{{description|safe}}</div>{% for qr in quality_requirements %}<div class='tooltip-description'><em>{{qr.summary|safe}}</em></div>{% endfor %}">
+      <img src="{{image}}" alt="Card" height=99 />
+    </a>
   </div>
 {%- endmacro %}
 

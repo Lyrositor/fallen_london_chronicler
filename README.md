@@ -92,8 +92,6 @@ The following are known issues with the current version of the Chronicler:
 
 - Outcomes which lead to other outcomes (e.g. when setting out to Zee from Wolfstack Docks) are not currently supported
 - Quality changes which don't actually change the quality level (either because the quantity is already 0, in case of a decrease, or the quality cap, in case of an increase) aren't recorded properly
-- Opportunity cards are not supported - the storylets themselves are recorded, but they are not linked back to the area
-- Quality requirements are not listed in Google Docs output
 - Designated currency costs are not displayed currently (very few storylets actually use these types of quality requirements)
 
 ## Development

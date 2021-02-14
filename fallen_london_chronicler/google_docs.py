@@ -155,6 +155,9 @@ class FormattedParagraph:
                     "range": idx_range
                 }
             }
+
+    def get_post_format_requests(self, start_idx: int, end_idx: int):
+        idx_range = {"startIndex": start_idx, "endIndex": end_idx}
         if self.bullets is not None:
             yield {
                 "createParagraphBullets": {
@@ -194,7 +197,8 @@ class GoogleDocsService:
             starting_idx: int
     ) -> None:
         all_content_requests = []
-        all_format_requests = []
+        pre_format_requests = []
+        post_format_requests = []
         idx = starting_idx
         for paragraph in paragraphs:
             paragraph_start_idx = idx
@@ -202,12 +206,20 @@ class GoogleDocsService:
                 idx, content_requests, format_requests = \
                     text_segment.get_requests(idx)
                 all_content_requests.extend(content_requests)
-                all_format_requests.extend(format_requests)
-            all_format_requests.extend(paragraph.get_format_requests(
+                pre_format_requests.extend(format_requests)
+            pre_format_requests.extend(paragraph.get_format_requests(
+                paragraph_start_idx, idx
+            ))
+            post_format_requests.extend(paragraph.get_post_format_requests(
                 paragraph_start_idx, idx
             ))
         self._batch_update(
-            document_id, [*all_content_requests, *all_format_requests]
+            document_id,
+            [
+                *all_content_requests,
+                *pre_format_requests,
+                *reversed(post_format_requests)
+            ]
         )
 
     def set_document_properties(

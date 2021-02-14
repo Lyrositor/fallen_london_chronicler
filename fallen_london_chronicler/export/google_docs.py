@@ -12,7 +12,7 @@ from fallen_london_chronicler.google_docs import GoogleDocsService, FormattedTex
     FormattedParagraph, NamedStyle, Alignment, BulletStyle
 from fallen_london_chronicler.images import BASE_IMAGE_URL
 from fallen_london_chronicler.model import Storylet, Branch, OutcomeObservation, \
-    OutcomeMessageType, Area
+    OutcomeMessageType, Area, QualityRequirement
 
 
 class GoogleDocsExporter(Exporter):
@@ -94,6 +94,7 @@ def render_storylet(storylet: Storylet) -> Iterable[FormattedParagraph]:
             so.description for so in storylet.observations if so.description
         )
     )
+    yield from render_quality_requirements(storylet.quality_requirements)
     for branch in storylet.branches:
         yield from render_branch(branch)
 
@@ -113,6 +114,7 @@ def render_branch(branch: Branch) -> Iterable[FormattedParagraph]:
             bo.description for bo in branch.observations if bo.description
         )
     )
+    yield from render_quality_requirements(branch.quality_requirements)
 
     successes = [
         outcome for outcome in branch.outcome_observations if outcome.is_success
@@ -137,6 +139,24 @@ def render_branch(branch: Branch) -> Iterable[FormattedParagraph]:
         grouped_failures = group_outcomes(failures)
         for (name, description), messages in grouped_failures.items():
             yield from render_outcome(name, description, messages)
+
+
+def render_quality_requirements(
+        quality_requirements: Optional[List[QualityRequirement]]
+):
+    if not quality_requirements:
+        return
+    yield FormattedParagraph(
+        text_segments=[FormattedText("Requirements:\n", bold=True)]
+    )
+    yield FormattedParagraph(
+        text_segments=convert_to_formatted_text(
+            "<br />".join(
+                qr.summary for qr in quality_requirements
+            )
+        ),
+        bullets=BulletStyle.BULLET_DISC_CIRCLE_SQUARE
+    )
 
 
 def render_outcome(
@@ -288,38 +308,63 @@ def _format_soup(
         bold: Optional[bool] = None,
         italic: Optional[bool] = None,
         url_link: Optional[str] = None,
+        prefix: str = ""
 ) -> Iterable[FormattedText]:
     for tag in tags:
         if tag.name == "p":
             sub = list(_format_soup(
-                tag, bold=bold, italic=italic, url_link=url_link
+                tag, bold=bold, italic=italic, url_link=url_link, prefix=prefix
             ))
             yield from sub
             if sub and not sub[-1].text.endswith("\n"):
                 yield FormattedText("\n")
         elif tag.name in ("em", "i"):
             yield from _format_soup(
-                tag, bold=bold, italic=True, url_link=url_link
+                tag, bold=bold, italic=True, url_link=url_link, prefix=prefix
             )
         elif tag.name == "strong":
             yield from _format_soup(
-                tag, bold=True, italic=italic, url_link=url_link
+                tag, bold=True, italic=italic, url_link=url_link, prefix=prefix
             )
         elif tag.name == "span" and "descriptive" in tag["class"]:
             yield from _format_soup(
-                tag, bold=True, italic=True, url_link=url_link
+                tag, bold=True, italic=True, url_link=url_link, prefix=prefix
             )
         elif tag.name == "br":
             yield FormattedText("\n")
         elif tag.name == "a":
             yield from _format_soup(
-                tag, bold=bold, italic=italic, url_link=tag.attrs.get("href")
+                tag,
+                bold=bold,
+                italic=italic,
+                url_link=tag.attrs.get("href"),
+                prefix=prefix
+            )
+        elif tag.name == "ul":
+            yield from _format_soup(
+                tag,
+                bold=bold,
+                italic=italic,
+                url_link=url_link,
+                prefix=prefix + "\t"
+            )
+        elif tag.name == "li":
+            yield FormattedText("\n")
+            yield from _format_soup(
+                tag, bold=bold, italic=italic, url_link=url_link, prefix=prefix
+            )
+        elif tag.name == "span":
+            yield from _format_soup(
+                tag, bold=bold, italic=italic, url_link=url_link, prefix=prefix
             )
         else:
             if tag.name is not None:
                 logging.warning(f"Unexpected tag {tag.name}")
             yield FormattedText(
-                str(tag.string), bold=bold, italic=italic, url_link=url_link
+                prefix + str(tag.string),
+                bold=bold,
+                italic=italic,
+                url_link=url_link
             )
 
 
