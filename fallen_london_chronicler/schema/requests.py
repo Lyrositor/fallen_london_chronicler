@@ -6,7 +6,7 @@ from fallen_london_chronicler.schema.area import AreaInfo
 from fallen_london_chronicler.schema.possessions import CategoryPossessionsInfo
 from fallen_london_chronicler.schema.setting import SettingInfo
 from fallen_london_chronicler.schema.storylet import StoryletInfo, \
-    StoryletBranchOutcomeInfo, StoryletBranchOutcomeMessageInfo
+    StoryletBranchOutcomeInfo, StoryletBranchOutcomeMessageInfo, CardInfo
 
 
 class PossessionsRequest(BaseModel):
@@ -16,6 +16,12 @@ class PossessionsRequest(BaseModel):
 class AreaRequest(BaseModel):
     area: AreaInfo
     settingId: Optional[int] = None
+
+
+class OpportunitiesRequest(BaseModel):
+    displayCards: List[CardInfo]
+    areaId: int
+    settingId: int
 
 
 class SettingRequest(BaseModel):

@@ -39,6 +39,7 @@ class StoryletDistribution(Enum):
     ABUNDANT = "Abundant"
     FREQUENT = "Frequent"
     INFREQUENT = "Infrequent"
+    RARE = "Rare"
     STANDARD = "Standard"
     UBIQUITOUS = "Ubiquitous"
     UNUSUAL = "Unusual"
@@ -57,6 +58,11 @@ class StoryletUrgency(Enum):
     MUST = "Must"
 
 
+class StoryletStickiness(Enum):
+    DISCARDABLE = "Discardable"
+    STICKY = "Sticky"
+
+
 class Storylet(GameEntity):
     __tablename__ = "storylets"
 
@@ -64,8 +70,11 @@ class Storylet(GameEntity):
     category = Column(EnumType(StoryletCategory))
     distribution = Column(EnumType(StoryletDistribution))
     frequency = Column(EnumType(StoryletFrequency))
+    stickiness = Column(EnumType(StoryletStickiness))
     image = Column(String)
     urgency = Column(EnumType(StoryletUrgency))
+    is_autofire = Column(Boolean, default=False)
+    is_card = Column(Boolean, default=False)
     is_top_level = Column(Boolean, default=False)
 
     observations: InstrumentedList[StoryletObservation] = relationship(

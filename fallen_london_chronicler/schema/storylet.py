@@ -54,6 +54,18 @@ class EventInfo(BaseModel):
     name: str
 
 
+class CardInfo(BaseModel):
+    category: str
+    eventId: int
+    image: str
+    isAutofire: bool
+    name: str
+    qualityRequirements: List[QualityRequirementInfo]
+    stickiness: str
+    teaser: str
+    unlockedWithDescription: str
+
+
 class StoryletBranchOutcomeInfo(BaseModel):
     canGoAgain: bool
     currentActionsRemaining: int

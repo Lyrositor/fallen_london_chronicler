@@ -33,13 +33,31 @@ def render_area(area: Area) -> Dict[str, Any]:
         for setting in area.settings:
             settings[setting.id] = dict(
                 name=setting.name,
+                opportunities=[],
                 storylets=[],
             )
+
+        # Add the top-level storylets
         for storylet in build_storylet_order(area.storylets):
             found_valid_setting = False
             for setting in storylet.settings:
                 if setting.id in settings:
                     settings[setting.id]["storylets"].append(storylet)
+                    found_valid_setting = True
+            if not found_valid_setting:
+                logging.error(
+                    f"Storylet {storylet.id} is not in any valid setting "
+                    f"for this area"
+                )
+
+        # Add the opportunities
+        for storylet in area.storylets:
+            if not storylet.is_card:
+                continue
+            found_valid_setting = False
+            for setting in storylet.settings:
+                if setting.id in settings:
+                    settings[setting.id]["opportunities"].append(storylet)
                     found_valid_setting = True
             if not found_valid_setting:
                 logging.error(

@@ -42,6 +42,12 @@
   </div>
 {%- endmacro %}
 
+{% macro card(title, description, image, link, quality_requirements, icon_border) -%}
+  <div class="card section-icon {% if icon_border %}section-icon-border section-icon-{{icon_border|lower}}{% endif %}">
+    <a href="{{link}}"><img src="{{image}}" alt="Card" height=99 /></a>
+  </div>
+{%- endmacro %}
+
 {% macro area_header(area, root_url) -%}
 {% if area %}
   <a href="{{root_url + area.url}}">

@@ -12,12 +12,14 @@ from fallen_london_chronicler.model import Area, AreaType, Storylet, \
     record_observation, Quality, QualityNature, \
     BranchQualityRequirement, OutcomeObservation, OutcomeMessage, \
     OutcomeMessageType, QualityRequirement, StoryletQualityRequirement, Setting
+from fallen_london_chronicler.model.storylet import StoryletStickiness
 from fallen_london_chronicler.model.utils import pairwise
 from fallen_london_chronicler.recording import RecordingState
 from fallen_london_chronicler.schema import StoryletInfo, AreaInfo, BranchInfo, \
     ChallengeInfo, QualityRequirementInfo, StoryletBranchOutcomeInfo, \
     StoryletBranchOutcomeMessageInfo
 from fallen_london_chronicler.schema.setting import SettingInfo
+from fallen_london_chronicler.schema.storylet import CardInfo
 from fallen_london_chronicler.utils import match_any
 
 BASE_IMAGE_URL = "https://images.fallenlondon.com/images"
@@ -220,6 +222,18 @@ def record_setting(
     return setting
 
 
+def record_opportunities(
+        session: Session,
+        area_id: int,
+        setting_id: int,
+        cards_info: Iterable[CardInfo]
+) -> List[Storylet]:
+    return [
+        record_card(session, area_id, setting_id, card_info)
+        for card_info in cards_info
+    ]
+
+
 def record_area_storylets(
         session: Session,
         area_id: int,
@@ -286,6 +300,35 @@ def record_storylet(
     setting = Setting.get_or_create(session, setting_id)
     setting.storylets.append(storylet)
 
+    return storylet
+
+
+def record_card(
+        session: Session, area_id: int, setting_id: int, card_info: CardInfo
+) -> Storylet:
+    storylet = Storylet.get_or_create(session, card_info.eventId)
+    storylet.category = StoryletCategory(card_info.category)
+    storylet.image = ICONS_URL.format(card_info.image)
+    storylet.is_card = True
+    storylet.is_autofire = card_info.isAutofire
+    storylet.stickiness = StoryletStickiness(card_info.stickiness)
+    record_observation(
+        storylet.observations,
+        StoryletObservation,
+        name=card_info.name,
+        teaser=card_info.teaser,
+        quality_requirements=[
+            record_quality_requirement(
+                session, StoryletQualityRequirement, quality_requirement_info
+            )
+            for quality_requirement_info in card_info.qualityRequirements
+        ],
+    )
+
+    area = Area.get_or_create(session, area_id)
+    area.storylets.append(storylet)
+    setting = Setting.get_or_create(session, setting_id)
+    setting.storylets.append(storylet)
     return storylet
 
 

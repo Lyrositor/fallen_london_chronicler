@@ -229,6 +229,11 @@ a:hover, a:active, a:focus {
     justify-content: space-between;
 }
 
+.card {
+    display: inline-block;
+    margin: 0.5rem 0.3rem;
+}
+
 .outcome-message {
     display: flex;
     margin-bottom: 1rem;

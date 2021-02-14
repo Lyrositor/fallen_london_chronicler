@@ -13,6 +13,7 @@ const LISTENER_URL = "http://localhost:7777/api/submit";
 const SUBMIT_AREA_URL = LISTENER_URL + "/area";
 const SUBMIT_POSSESSIONS_URL = LISTENER_URL + "/possessions";
 const SUBMIT_SETTING_URL = LISTENER_URL + "/setting";
+const SUBMIT_OPPORTUNITIES_URL = LISTENER_URL + "/opportunities";
 const SUBMIT_STORYLET_LIST_URL = LISTENER_URL + "/storylet/list";
 const SUBMIT_STORYLET_VIEW_URL = LISTENER_URL + "/storylet/view";
 const SUBMIT_STORYLET_OUTCOME_URL = LISTENER_URL + "/storylet/outcome";
@@ -110,6 +111,22 @@ function submitBranchOutcomeData(branchId, chooseBranchRequestData) {
     submit(SUBMIT_STORYLET_OUTCOME_URL, branchOutcomeData, `storylet outcome of branch ${branchId}`);
 }
 
+function submitOpportunitiesData(displayCards) {
+    if (areaId == null) {
+        console.warn("Not submitting opportunity as area ID is not yet known");
+        return;
+    }
+    if (settingId == null) {
+        console.warn("Not submitting opportunity as setting ID is not yet known");
+        return;
+    }
+    submit(
+        SUBMIT_OPPORTUNITIES_URL,
+        {areaId, settingId, displayCards},
+        `opportunities in area ${areaId}/setting ${settingId}`
+    );
+}
+
 function submitStoryletListData(storylets) {
     if (areaId == null) {
         console.warn("Not submitting storylet list as area ID is not yet known");
@@ -197,6 +214,9 @@ function getBranchId(xmlHttpRequest) {
                 }
                 if (data.character != null && data.character.setting != null) {
                     submitSettingData(data.character.setting);
+                }
+                if (data.displayCards != null) {
+                    submitOpportunitiesData(data.displayCards);
                 }
 
                 if (requestUrl === CHOOSE_BRANCH_URL) {

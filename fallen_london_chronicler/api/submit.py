@@ -1,13 +1,15 @@
 from fastapi import APIRouter
 
-from fallen_london_chronicler.aggregator import record_area, record_area_storylets, \
-    record_storylet, record_outcome, record_setting
+from fallen_london_chronicler.aggregator import record_area, \
+    record_area_storylets, \
+    record_storylet, record_outcome, record_setting, record_opportunities
 from fallen_london_chronicler.db import get_session
 from fallen_london_chronicler.model import OutcomeObservation
 from fallen_london_chronicler.recording import recording_state
 from fallen_london_chronicler.schema import SubmitResponse, AreaRequest, \
     StoryletListRequest, StoryletViewRequest, StoryletBranchOutcomeRequest, \
     OutcomeSubmitResponse, PossessionsRequest, SettingRequest
+from fallen_london_chronicler.schema.requests import OpportunitiesRequest
 
 router = APIRouter()
 
@@ -39,6 +41,20 @@ async def setting(
 ) -> SubmitResponse:
     with get_session() as session:
         record_setting(session, setting_request.setting, setting_request.areaId)
+    return SubmitResponse(success=True)
+
+
+@router.post("/opportunities")
+async def opportunities(
+        opportunities_request: OpportunitiesRequest
+) -> SubmitResponse:
+    with get_session() as session:
+        record_opportunities(
+            session,
+            opportunities_request.areaId,
+            opportunities_request.settingId,
+            opportunities_request.displayCards
+        )
     return SubmitResponse(success=True)
 
 
