@@ -2,7 +2,7 @@ import os.path
 
 from fastapi import APIRouter
 from starlette.requests import Request
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, Response
 
 from fallen_london_chronicler.config import config
 from fallen_london_chronicler.db import engine, get_session
@@ -16,19 +16,37 @@ USERSCRIPT_PATH = os.path.join(
 )
 
 
+class JavaScriptResponse(Response):
+    media_type = "text/javascript"
+
+
 # noinspection PyUnusedLocal
 @router.get("/", response_class=HTMLResponse)
 @templated("home.html")
-async def areas(request: Request):
-    with open(USERSCRIPT_PATH) as f:
-        userscript = f.read()
+async def home(request: Request):
     return {
-        "userscript": userscript
+        "reset_data_enable": config.reset_data_enable,
+        "html_export_enable": config.html_export_enable,
+        "google_docs_export_enable": config.google_docs_export_enable,
     }
+
+
+@router.get("/userscript.js", response_class=HTMLResponse)
+async def userscript(request: Request, api_key: str = ""):
+    with open(USERSCRIPT_PATH) as f:
+        script = f.read()
+    script = script.replace("{{api_key}}", str(api_key))
+    script = script.replace("{{download_url}}", str(request.url))
+    script = script.replace("{{submit_url}}", config.root_url + "/api/submit")
+    return JavaScriptResponse(script)
 
 
 @router.post("/reset",)
 async def reset():
+    if not config.reset_data_enable:
+        return {
+            "success": False
+        }
     for tbl in reversed(Base.metadata.sorted_tables):
         engine.execute(tbl.delete())
     return {
@@ -39,6 +57,12 @@ async def reset():
 @router.post("/export_html")
 async def export_html():
     from fallen_london_chronicler.export.html import HTMLExporter
+
+    if not config.html_export_enable:
+        return {
+            "success": False
+        }
+
     with get_session() as session:
         exporter = HTMLExporter(
             export_dir=config.html_export_path,
@@ -54,6 +78,12 @@ async def export_html():
 @router.post("/export_google_docs")
 async def export_google_docs():
     from fallen_london_chronicler.export.google_docs import GoogleDocsExporter
+
+    if not config.google_docs_export_enable:
+        return {
+            "success": False
+        }
+
     with get_session() as session:
         exporter = GoogleDocsExporter(
             google_credentials_path=config.google_credentials_path,

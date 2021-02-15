@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fallen_london_chronicler"
-version = "1.0.0"
+version = "1.1.0"
 description = "A tool for recording and exporting Fallen London content."
 authors = ["Lyrositor"]
 

@@ -4,28 +4,36 @@
 <div style="margin: 1rem 0; text-align: center">
   <a href="{{root_url}}/areas/" class="btn btn-primary" style="font-size: 1.5rem;">View Areas</a>
 </div>
-<h2>Manage</h2>
-<div style="text-align: center">
-  <div id="status" class="status-msg" style="display: none"></div>
-</div>
-<div class="buttons-group" style="margin-bottom: 1rem;">
-  <button class="btn btn-primary" id="action-reset">Reset Data</button>
-  <button class="btn btn-primary" id="action-export-html">Export to HTML</button>
-  <button class="btn btn-primary" id="action-export-google-docs">Export to Google Docs</button>
-</div>
+{% if reset_data_enable or html_export_enable or google_docs_export_enable %}
+  <h2>Manage</h2>
+  <div style="text-align: center">
+    <div id="status" class="status-msg" style="display: none"></div>
+  </div>
+  <div class="buttons-group" style="margin-bottom: 1rem;">
+    {% if reset_data_enable %}<button class="btn btn-primary" id="action-reset">Reset Data</button>{% endif %}
+    {% if html_export_enable %}<button class="btn btn-primary" id="action-export-html">Export to HTML</button>{% endif %}
+    {% if google_docs_export_enable %}<button class="btn btn-primary" id="action-export-google-docs">Export to Google Docs</button>{% endif %}
+  </div>
+{% endif %}
 <h2>Usage</h2>
 <p>Follow the below steps to begin recording:</p>
 <ol>
   <li>If not already done, install the userscript as detailed below</li>
   <li>Refresh Fallen London</li>
   <li>Play through Fallen London as you normally would. <strong>Only use one browser window/tab at a time.</strong></li>
-  <li>Once done, export your recording (optionally) and shut down the tool</li>
 </ol>
 <h2>Setup</h2>
 <p>To start recording, you will need to add a userscript to your browser.</p>
 <ol>
-  <li>Download a compatible userscript extension for your browser. <strong>Violentmonkey</strong> is recommended (available for <a href="https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/">Firefox</a>).</li>
-  <li>Add the following userscript for <strong>www.fallenlondon.com</strong>: <pre class="code"><code>{{userscript}}</code></pre></li>
+  <li>Get an API key from the site operators - you cannot submit data without an API key</li>
+  <li>Download a compatible userscript manager extension for your browser. <strong>Violentmonkey</strong> is recommended (available for <a href="https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/">Firefox</a>)</li>
+  <li>Input your API key here and click "Go" to get your userscript:
+    <form action="{{root_url + '/userscript.js'}}" method="get" class="row" style="margin: 1rem 0;">
+      <div class="col-auto"><input class="text-input" type="text" name="api_key" /></div>
+      <div class="col-auto"><input type="submit" class="btn btn-primary" value="Go" /></div>
+    </form>
+  </li>
+  <li>Add your userscript to your browser through your downloaded userscript manager</li>
 </ol>
 {% endblock %}
 

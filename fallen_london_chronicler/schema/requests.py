@@ -9,33 +9,37 @@ from fallen_london_chronicler.schema.storylet import StoryletInfo, \
     StoryletBranchOutcomeInfo, StoryletBranchOutcomeMessageInfo, CardInfo
 
 
-class PossessionsRequest(BaseModel):
+class SubmitRequest(BaseModel):
+    apiKey: Optional[str] = None
+
+
+class PossessionsRequest(SubmitRequest):
     possessions: List[CategoryPossessionsInfo]
 
 
-class AreaRequest(BaseModel):
+class AreaRequest(SubmitRequest):
     area: AreaInfo
     settingId: Optional[int] = None
 
 
-class OpportunitiesRequest(BaseModel):
+class OpportunitiesRequest(SubmitRequest):
     displayCards: List[CardInfo]
     areaId: int
     settingId: int
 
 
-class SettingRequest(BaseModel):
+class SettingRequest(SubmitRequest):
     setting: SettingInfo
     areaId: Optional[int] = None
 
 
-class StoryletListRequest(BaseModel):
+class StoryletListRequest(SubmitRequest):
     areaId: int
     settingId: int
     storylets: List[StoryletInfo]
 
 
-class StoryletViewRequest(BaseModel):
+class StoryletViewRequest(SubmitRequest):
     areaId: int
     settingId: int
     inInventory: bool
@@ -43,7 +47,7 @@ class StoryletViewRequest(BaseModel):
     storylet: StoryletInfo
 
 
-class StoryletBranchOutcomeRequest(BaseModel):
+class StoryletBranchOutcomeRequest(SubmitRequest):
     areaId: int
     branchId: int
     settingId: int

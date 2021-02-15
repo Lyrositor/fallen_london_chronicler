@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional, Iterable
-
+from typing import Dict, Any, Optional, Iterable, DefaultDict
 
 from fallen_london_chronicler.schema import PossessionInfo
 
@@ -56,4 +56,4 @@ class RecordingState:
         return new_state
 
 
-recording_state = RecordingState()
+recording_states: DefaultDict[str, RecordingState] = defaultdict(RecordingState)

@@ -1,6 +1,7 @@
 import webbrowser
 
 from fastapi import FastAPI
+from starlette.middleware.sessions import SessionMiddleware
 
 from fallen_london_chronicler.api import submit
 from fallen_london_chronicler.config import config
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     api = FastAPI(
         title=APP_TITLE, version=config.app_version, debug=config.debug
     )
+    api.add_middleware(SessionMiddleware, secret_key=config.session_secret)
     setup_api(api)
     setup_web(api, config.serve_cached_images)
     setup_db()

@@ -68,6 +68,20 @@ PYTHONPATH=.:${PYTHONPATH} python fallen_london_chronicler/__main__.py
 
 Fallen London Chronicler comes with a `config.default.env` which can be used to set various configuration settings. Rename it to `config.env` and edit the values within to adjust various settings (the file is commented to let you know what each value does).
 
+#### Setting up a production deployment
+
+If you're planning on serving this application somewhere beyond your local machine, you'll need to set up a few additional settings, namely:
+
+- `ROOT_URL`: set to your externally-visible URL
+- `SESSION_SECRET`: set to a long, hard to guess secret value
+- `REQUIRE_API_KEY`: set to `true`
+- `RESET_DATA_ENABLE`: set to `false`
+- `HTML_EXPORT_ENABLE`: set to `false`
+- `GOOGLE_DOCS_EXPORT_ENABLE`: set to `false`
+- `SERVE_CACHED_IMAGES` (optional): if you have a better setup for serving game images on `/images` (e.g. something nginx-based), you can disable the app's image serving and use your setup instead to get better performance.
+
+You can add API keys by running the `__main__.py` script with the `--add_api_key` parameter.
+
 #### Setting up HTML Export
 
 In order to export your recording to a static collection of HTML files, configure the variables in your config under the `HTML Export` section.

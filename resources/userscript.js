@@ -3,13 +3,14 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://www.fallenlondon.com/
 // @grant       GM.xmlHttpRequest
-// @version     1.0
+// @version     1.1.0
 // @author      Lyrositor
 // @description A tool for recording and exporting Fallen London content.
+// @downloadURL {{download_url}}
 // ==/UserScript==
 
-
-const LISTENER_URL = "http://localhost:7777/api/submit";
+const API_KEY = "{{api_key}}";
+const LISTENER_URL = "{{submit_url}}";
 const SUBMIT_AREA_URL = LISTENER_URL + "/area";
 const SUBMIT_POSSESSIONS_URL = LISTENER_URL + "/possessions";
 const SUBMIT_SETTING_URL = LISTENER_URL + "/setting";
@@ -32,6 +33,7 @@ let lastOutcomeObservationId = null;
 
 function submit(url, data, description) {
     console.log(`Submitting ${description}`);
+    data.apiKey = API_KEY;
     GM.xmlHttpRequest({
         method: "POST",
         url: url,

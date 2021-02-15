@@ -32,7 +32,7 @@
         </a>
         {% if quality_requirements %}
           {% for qr in quality_requirements|reverse %}
-            <div class="icon" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{qr.summary|safe}}">
+            <div class="icon" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="{{qr.summary}}">
               <img src="{% if qr.image %}{{qr.image|format_image_url}}{% else %}{{'/icons_small/question.png'|format_image_url}}{% endif %}" alt="{{qr.quality.name}}" />
             </div>
           {% endfor %}
@@ -44,7 +44,7 @@
 
 {% macro card(title, description, image, link, quality_requirements, icon_border) -%}
   <div class="card section-icon {% if icon_border %}section-icon-border section-icon-{{icon_border|lower}}{% endif %}">
-    <a href="{{link}}" style="display: block" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<div class='tooltip-title'>{{title|safe}}</div><div class='tooltip-description'>{{description|safe}}</div>{% for qr in quality_requirements %}<div class='tooltip-description'><em>{{qr.summary|safe}}</em></div>{% endfor %}">
+    <a href="{{link}}" style="display: block" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<div class='tooltip-title'>{{title}}</div><div class='tooltip-description'>{{description}}</div>{% for qr in quality_requirements %}<div class='tooltip-description'><em>{{qr.summary}}</em></div>{% endfor %}">
       <img src="{{image}}" alt="Card" height=99 />
     </a>
   </div>
@@ -52,12 +52,10 @@
 
 {% macro area_header(area) -%}
 {% if area %}
-  <a href="{{area.url|format_url}}">
-    <h2 class="h2-title">{{area.name}}</h2>
-    {% if area.image %}
-      <img src="{{area.image|format_image_url}}" alt="{{area.name}}" style="width: 100%;" />
-    {% endif %}
-  </a>
+  <a href="{{area.url|format_url}}"><h2 class="h2-title">{{area.name}}</h2></a>
+  {% if area.image %}
+    <a href="{{area.url|format_url}}"><img src="{{area.image|format_image_url}}" alt="{{area.name}}" style="width: 100%;" /></a>
+  {% endif %}
   <hr />
 {% endif %}
 {%- endmacro %}
