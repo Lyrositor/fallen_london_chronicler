@@ -1,4 +1,5 @@
 import os.path
+import urllib.parse
 
 from fastapi import APIRouter
 from starlette.requests import Request
@@ -32,11 +33,14 @@ async def home(request: Request):
 
 
 @router.get("/userscript.js", response_class=HTMLResponse)
-async def userscript(request: Request, api_key: str = ""):
+async def userscript(api_key: str = ""):
     with open(USERSCRIPT_PATH) as f:
         script = f.read()
+    params = urllib.parse.urlencode({"api_key": api_key})
     script = script.replace("{{api_key}}", str(api_key))
-    script = script.replace("{{download_url}}", str(request.url))
+    script = script.replace(
+        "{{download_url}}", f"{config.root_url}/userscript.js?{params}"
+    )
     script = script.replace("{{submit_url}}", config.root_url + "/api/submit")
     return JavaScriptResponse(script)
 

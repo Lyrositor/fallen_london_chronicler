@@ -6,7 +6,7 @@
   {% for setting in settings.values() %}
     <h3>{{setting.name}}</h3>
     {% for opportunity in setting.opportunities %}
-      {{ m.card(title=opportunity.name, description=opportunity.teaser, image=opportunity.image|format_image_url, link=opportunity.url(area.id), quality_requirements=opportunity.quality_requirements, icon_border=opportunity.color) }}
+      {{ m.card(title=opportunity.name, description=opportunity.teaser, image=opportunity.image|format_image_url, link=opportunity.url(area.id)|format_url, quality_requirements=opportunity.quality_requirements, icon_border=opportunity.color) }}
     {% endfor %}
     {% for storylet in setting.storylets %}
       {{ m.section(title=storylet.name, description=storylet.teaser, image=storylet.image|format_image_url, button_text="Go", link=storylet.url(area.id)|format_url, quality_requirements=storylet.quality_requirements, icon_border=storylet.color, disabled=not storylet.description) }}
