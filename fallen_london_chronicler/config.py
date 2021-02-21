@@ -24,6 +24,8 @@ class AppConfig(BaseSettings):
     google_docs_template_id: Optional[str] = \
         "1HFak7enwGuiuOiHkX-3lnf-_pgUC7zj0kIZShqhvEUM"
 
+    sentry_dsn: Optional[str] = None
+
     class Config:
         case_sensitive = False
         env_file = "config.env"

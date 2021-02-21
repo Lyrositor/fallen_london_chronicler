@@ -1,6 +1,8 @@
+import logging
 import webbrowser
 
 from fastapi import FastAPI
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from fallen_london_chronicler.api import submit
@@ -21,10 +23,23 @@ def setup_db():
     model.Base.metadata.create_all(engine)
 
 
+def setup_monitoring(api: FastAPI) -> None:
+    if config.sentry_dsn:
+        try:
+            import sentry_sdk
+            sentry_sdk.init(config.sentry_dsn)
+            api.add_middleware(SentryAsgiMiddleware)
+        except ImportError:
+            logging.warning(
+                "Sentry integration not found, error reporting is disabled"
+            )
+
+
 def create_app() -> FastAPI:
     api = FastAPI(
         title=APP_TITLE, version=config.app_version, debug=config.debug
     )
+    setup_monitoring(api)
     api.add_middleware(SessionMiddleware, secret_key=config.session_secret)
     setup_api(api)
     setup_web(api, config.serve_cached_images)
