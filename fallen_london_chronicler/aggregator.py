@@ -437,17 +437,16 @@ def record_outcome(
         recording_state: RecordingState,
         session: Session,
         branch_id: int,
-        outcome_info: Optional[StoryletBranchOutcomeInfo],
+        outcome_info: StoryletBranchOutcomeInfo,
         messages: Optional[List[StoryletBranchOutcomeMessageInfo]],
         redirect: Optional[StoryletInfo],
         area_id: int,
         setting_id: int,
-) -> Optional[OutcomeObservation]:
+) -> OutcomeObservation:
     if messages is None:
         messages = []
     branch = Branch.get_or_create(session, branch_id)
-    if not branch:
-        return None
+    branch.image = get_or_cache_image(ImageType.ICON, outcome_info.image)
     redirect_area = redirect_setting = None
     outcome_messages = []
     for message_info in messages:

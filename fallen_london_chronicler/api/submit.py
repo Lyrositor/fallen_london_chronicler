@@ -138,6 +138,11 @@ async def storylet_outcome(
                 success=False,
                 error="Recording is not active",
             )
+        if not storylet_outcome_request.endStorylet:
+            return OutcomeSubmitResponse(
+                success=False,
+                error="No outcome data submitted"
+            )
         outcome = record_outcome(
             recording_state=recording_state,
             session=session,
@@ -148,11 +153,6 @@ async def storylet_outcome(
             area_id=storylet_outcome_request.areaId,
             setting_id=storylet_outcome_request.settingId,
         )
-        if not outcome:
-            return OutcomeSubmitResponse(
-                success=False,
-                error="Unknown branch, cannot submit outcome"
-            )
         if storylet_outcome_request.isLinkingFromOutcomeObservation is not None:
             # TODO Test this, does it have the branch ID?
             observation = session.query(OutcomeObservation).get(

@@ -16,10 +16,10 @@ from fallen_london_chronicler.model.utils import latest_observation_property
 class Branch(GameEntity):
     __tablename__ = "branches"
 
-    action_cost = Column(Integer, nullable=False)
-    button_text = Column(String, nullable=False)
+    action_cost = Column(Integer, default=0)
+    button_text = Column(String, default="Go")
     image = Column(String, nullable=False)
-    ordering = Column(Integer, nullable=False)
+    ordering = Column(Integer, default=0)
 
     observations: InstrumentedList[BranchObservation] = relationship(
         "BranchObservation",
