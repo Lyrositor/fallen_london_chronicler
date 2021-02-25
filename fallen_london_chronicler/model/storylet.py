@@ -32,6 +32,7 @@ class StoryletCategory(Enum):
     QUESTICLE_STEP = "QuesticleStep"
     SEASONAL = "Seasonal"
     SINISTER = "Sinister"
+    TRAVEL = "Travel"
     UNSPECIALIZED = "Unspecialised"
 
 
