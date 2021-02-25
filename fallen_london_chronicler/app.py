@@ -29,7 +29,7 @@ def setup_monitoring(api: FastAPI) -> None:
             import sentry_sdk
             sentry_sdk.init(config.sentry_dsn)
             api.add_middleware(SentryAsgiMiddleware)
-        except ImportError:
+        except ModuleNotFoundError:
             logging.warning(
                 "Sentry integration not found, error reporting is disabled"
             )
