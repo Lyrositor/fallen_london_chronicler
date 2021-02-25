@@ -148,7 +148,7 @@ TOOLTIPS_WORDY = (
     ),
 )
 TOOLTIPS_WORDY_ITEM = re.compile(
-    r"^<li(?: class='current')?>(?:<em>)?(.*?)(?:</em>)?</li>$"
+    r"<li(?: class='current')?>(?:<em>)?(.*?)(?:</em>)?</li>"
 )
 
 QUALITY_GAIN = (
@@ -407,9 +407,10 @@ def record_quality_requirement(
         quantity_min = int(match.group("quantity_min"))
         quantity_max = int(match.group("quantity_max"))
     elif match := match_any(TOOLTIPS_WORDY, quality_requirement_info.tooltip):
-        required_values = TOOLTIPS_WORDY_ITEM.findall(
-            match.group("requirements")
-        )
+        required_values = [
+            req.replace(r'\"', '"')
+            for req in TOOLTIPS_WORDY_ITEM.findall(match.group("requirements"))
+        ]
     else:
         logging.error(f"Unknown tooltip: {tooltip}")
         quality_requirement.fallback_text = fix_html(tooltip)
@@ -574,9 +575,10 @@ def record_outcome_message(
 
     if change is not None and change != message.change:
         logging.warning(
-            f"Calculated changed ({message.change}) does not match parsed "
-            f"change ({change} CP)"
+            f"Calculated change ({message.change}) does not match parsed "
+            f"change ({change}), using parsed change"
         )
+        message.change = change
 
     return message
 
