@@ -446,7 +446,8 @@ def record_outcome(
     if messages is None:
         messages = []
     branch = Branch.get_or_create(session, branch_id)
-    branch.image = get_or_cache_image(ImageType.ICON, outcome_info.image)
+    if not branch.image:
+        branch.image = get_or_cache_image(ImageType.ICON, outcome_info.image)
     redirect_area = redirect_setting = None
     outcome_messages = []
     for message_info in messages:
