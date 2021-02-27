@@ -115,14 +115,14 @@ TOOLTIPS_MAXIMUM = (
 )
 TOOLTIPS_EXACTLY = (
     re.compile(
-        r"^You unlocked this with "
+        r"^You unlocked this with (?:an? )?"
         r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)"
         r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$"
     ),
     re.compile(
         r"^You need exactly "
         r"<span class='quality-name'>(?P<quality>.+)</span> (?P<quantity>\d+)"
-        r"<em> \(you have (?P<current>\d+)\)</em>$"
+        r"(?:<em> \(you have (?P<current>\d+)\)</em>)?$"
     ),
     re.compile(
         r"^You need <span class='quality-name'>(?P<quality>.+)</span> "
@@ -131,7 +131,8 @@ TOOLTIPS_EXACTLY = (
     re.compile(
         r"^You unlocked this with any "
         r"<span class='quality-name'>(?P<quality>.+)</span>"
-        r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$")
+        r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$"
+    ),
 )
 TOOLTIPS_RANGE = (
     re.compile(

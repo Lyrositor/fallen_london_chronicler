@@ -148,6 +148,10 @@ async def storylet_outcome(
             )
             if observation:
                 observation.redirect_outcome = outcome
+        if outcome.redirect_area_id is not None:
+            user.current_area_id = outcome.redirect_area_id
+        if outcome.redirect_setting_id is not None:
+            user.current_setting_id = outcome.redirect_setting_id
     return OutcomeSubmitResponse(
         success=True,
         outcomeObservationId=outcome.id,
