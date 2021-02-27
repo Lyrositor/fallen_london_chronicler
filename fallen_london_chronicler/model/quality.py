@@ -20,8 +20,11 @@ class Quality(GameEntity):
     __tablename__ = "qualities"
 
     name = Column(String, nullable=False)
+    description = Column(String)
     category = Column(String, nullable=False)
     nature = Column(EnumType(QualityNature), nullable=False)
+    storylet_id = Column(Integer, ForeignKey("storylets.id"))
+    storylet = relationship("Storylet", back_populates="thing")
 
 
 class QualityRequirement(Base):

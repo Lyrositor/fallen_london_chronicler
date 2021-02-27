@@ -19,6 +19,7 @@ google-auth-oauthlib = "^0.4.2"
 beautifulsoup4 = "^4.9.3"
 python-dotenv = "^0.15.0"
 sentry-sdk = "^0.20.3"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 pyinstaller = "^4.2"

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>User Management</h2>
+<input type="hidden" name="action" value="" />
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <td>Name</td>
+    <td>API Key</td>
+    <td>Admin?</td>
+    <td>Active</td>
+    <td>Actions</td>
+  </tr>
+  </thead>
+  <tbody>
+  {% for user in users %}
+    <tr>
+      <td>{{user.name}}</td>
+      <td><code>{{user.api_key}}</code></td>
+      <td><input form="user-{{user.id}}" type="checkbox" name="is_admin" {% if user.is_admin %}checked{% endif %} /></td>
+      <td><input form="user-{{user.id}}" type="checkbox" name="is_active" {% if user.is_active %}checked{% endif %} /></td>
+      <td>
+        <form method="post" id="user-{{user.id}}">
+          <button class="btn btn-primary" type="submit" name="save_user" value="{{user.id}}">Save</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+    <tr>
+      <td><input form="user-new" type="text" name="name" class="form-control" /></td>
+      <td><em>(Generated automatically)</em></td>
+      <td><input form="user-new" type="checkbox" name="is_admin" /></td>
+      <td><input form="user-new" type="checkbox" name="is_active" checked /></td>
+      <td>
+        <form method="post" id="user-new">
+          <button class="btn btn-primary" type="submit" name="save_user" value="">Create</button>
+        </form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

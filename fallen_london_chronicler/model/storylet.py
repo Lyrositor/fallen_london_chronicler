@@ -97,6 +97,9 @@ class Storylet(GameEntity):
     branches = relationship(
         "Branch", back_populates="storylet", order_by="desc(Branch.ordering)"
     )
+    thing = relationship(
+        "Quality", back_populates="storylet", uselist=False
+    )
 
     before = relationship(
         "Storylet",

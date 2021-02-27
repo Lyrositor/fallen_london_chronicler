@@ -3,6 +3,7 @@ import os.path
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
+from . import admin
 from . import area
 from . import areas
 from . import branch
@@ -24,6 +25,7 @@ def setup_web(api: FastAPI, serve_cached_images: bool) -> None:
             name="images"
         )
     api.include_router(home.router, prefix="")
+    api.include_router(admin.router, prefix="/admin")
     api.include_router(areas.router, prefix="/areas")
     api.include_router(area.router, prefix="/area")
     api.include_router(branch.router, prefix="/branch")

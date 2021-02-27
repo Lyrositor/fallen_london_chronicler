@@ -30,6 +30,7 @@ class PossessionInfo(BaseModel):
     bonusOrPenaltyDisplay: Optional[str] = None
     progressAsPercentage: int
     cap: Optional[int] = None
+    useEventId: Optional[int] = None
 
     enhancements: List[EnhancementInfo]
 

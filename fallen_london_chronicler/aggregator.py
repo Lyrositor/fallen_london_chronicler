@@ -13,13 +13,13 @@ from fallen_london_chronicler.model import Area, AreaType, Storylet, \
     ChallengeNature, ChallengeType, \
     record_observation, Quality, QualityNature, \
     BranchQualityRequirement, OutcomeObservation, OutcomeMessage, \
-    OutcomeMessageType, QualityRequirement, StoryletQualityRequirement, Setting
+    OutcomeMessageType, QualityRequirement, StoryletQualityRequirement, \
+    Setting, User, UserPossession
 from fallen_london_chronicler.model.storylet import StoryletStickiness
 from fallen_london_chronicler.model.utils import pairwise
-from fallen_london_chronicler.recording import RecordingState
-from fallen_london_chronicler.schema import StoryletInfo, AreaInfo, BranchInfo, \
-    ChallengeInfo, QualityRequirementInfo, StoryletBranchOutcomeInfo, \
-    StoryletBranchOutcomeMessageInfo
+from fallen_london_chronicler.schema import StoryletInfo, AreaInfo, \
+    BranchInfo, ChallengeInfo, QualityRequirementInfo, \
+    StoryletBranchOutcomeInfo, StoryletBranchOutcomeMessageInfo, PossessionInfo
 from fallen_london_chronicler.schema.setting import SettingInfo
 from fallen_london_chronicler.schema.storylet import CardInfo
 from fallen_london_chronicler.utils import match_any
@@ -127,7 +127,11 @@ TOOLTIPS_EXACTLY = (
     re.compile(
         r"^You need <span class='quality-name'>(?P<quality>.+)</span> "
         r"exactly (?P<quantity>\d+)$"
-    )
+    ),
+    re.compile(
+        r"^You unlocked this with any "
+        r"<span class='quality-name'>(?P<quality>.+)</span>"
+        r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$")
 )
 TOOLTIPS_RANGE = (
     re.compile(
@@ -412,7 +416,7 @@ def record_quality_requirement(
             for req in TOOLTIPS_WORDY_ITEM.findall(match.group("requirements"))
         ]
     else:
-        logging.error(f"Unknown tooltip: {tooltip}")
+        logging.warning(f"Unknown tooltip: {tooltip}")
         quality_requirement.fallback_text = fix_html(tooltip)
 
     quality_requirement.required_quantity_min = quantity_min
@@ -424,20 +428,30 @@ def record_quality_requirement(
 
 
 def record_quality(
-        session: Session, game_id: int, name: str, category: str, nature: str
+        session: Session,
+        game_id: int,
+        name: str,
+        category: str,
+        nature: str,
+        description: Optional[str] = None,
+        storylet_id: Optional[int] = None,
 ) -> Quality:
     quality = Quality.get_or_create(session, game_id)
     quality.name = name
     quality.category = category
     quality.nature = QualityNature(nature)
+    if description is not None:
+        quality.description = description
+    if storylet_id is not None:
+        quality.storylet = Storylet.get_or_create(session, storylet_id)
     return quality
 
 
 def record_outcome(
-        recording_state: RecordingState,
+        user: User,
         session: Session,
         branch_id: int,
-        outcome_info: StoryletBranchOutcomeInfo,
+        outcome_info: Optional[StoryletBranchOutcomeInfo],
         messages: Optional[List[StoryletBranchOutcomeMessageInfo]],
         redirect: Optional[StoryletInfo],
         area_id: int,
@@ -446,15 +460,13 @@ def record_outcome(
     if messages is None:
         messages = []
     branch = Branch.get_or_create(session, branch_id)
-    if not branch.image:
-        branch.image = get_or_cache_image(ImageType.ICON, outcome_info.image)
     redirect_area = redirect_setting = None
     outcome_messages = []
     for message_info in messages:
         if message_info.message is None:
             continue
         outcome_message = record_outcome_message(
-            recording_state, session, message_info
+            user, session, message_info
         )
         outcome_messages.append(outcome_message)
         if message_info.area:
@@ -485,8 +497,10 @@ def record_outcome(
         description=fix_html(
             outcome_info.event.description if outcome_info else None
         ),
-        image=get_or_cache_image(ImageType.ICON, outcome_info.event.image)
-        if outcome_info else branch.image,
+        image=get_or_cache_image(
+            ImageType.ICON,
+            outcome_info.event.image if outcome_info else branch.image
+        ),
         is_success=not any(
             om.type == OutcomeMessageType.DIFFICULTY_ROLL_FAILURE
             for om in outcome_messages
@@ -504,7 +518,7 @@ def record_outcome(
 
 
 def record_outcome_message(
-        recording_state: RecordingState,
+        user: User,
         session: Session,
         info: StoryletBranchOutcomeMessageInfo
 ) -> OutcomeMessage:
@@ -519,11 +533,13 @@ def record_outcome_message(
             game_id=info.possession.id,
             name=info.possession.name,
             category=info.possession.category,
-            nature=info.possession.nature
+            nature=info.possession.nature,
+            description=info.possession.description,
+            storylet_id=info.possession.useEventId,
         )
         message.quality_id = message.quality.id
-        old_state = recording_state.get_possession(message.quality_id)
-        new_state = recording_state.update_possession(info.possession)
+        old_state = user.get_possession(message.quality_id)
+        new_state = update_user_possession(session, user, info.possession)
 
         if message.type == OutcomeMessageType.STANDARD_QUALITY_CHANGE:
             message.change = (
@@ -581,6 +597,38 @@ def record_outcome_message(
         message.change = change
 
     return message
+
+
+def update_user_possessions(
+        session: Session,
+        user: User,
+        possession_infos: Iterable[PossessionInfo]
+) -> None:
+    user.possessions.clear()
+    for possession_info in possession_infos:
+        update_user_possession(session, user, possession_info)
+
+
+def update_user_possession(
+        session: Session, user: User, possession_info: PossessionInfo
+) -> UserPossession:
+    quality = record_quality(
+        session,
+        game_id=possession_info.id,
+        name=possession_info.name,
+        description=possession_info.description,
+        category=possession_info.category,
+        nature=possession_info.nature,
+        storylet_id=possession_info.useEventId,
+    )
+    possession = user.get_possession(possession_info.id)
+    if not possession:
+        possession = UserPossession()
+        user.possessions.append(possession)
+    possession.quality = quality
+    possession.level = possession_info.level
+    possession.progress_as_percentage = possession_info.progressAsPercentage
+    return possession
 
 
 def fix_html(text: Optional[str]) -> Optional[str]:

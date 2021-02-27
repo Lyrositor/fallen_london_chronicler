@@ -9,4 +9,5 @@ from .setting import Setting
 from .storylet import Storylet, StoryletCategory, \
     StoryletObservation, StoryletDistribution, StoryletFrequency, \
     StoryletUrgency
+from .user import User, UserPossession
 from .utils import record_observation
