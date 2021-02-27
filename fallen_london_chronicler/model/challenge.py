@@ -22,13 +22,13 @@ class Challenge(Base):
 
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, nullable=False)
-    category = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    image = Column(String, nullable=False)
+    category = Column(String(1023), nullable=False)
+    name = Column(String(1023), nullable=False)
+    description = Column(String(65535), nullable=False)
+    image = Column(String(1023), nullable=False)
     target = Column(Integer, nullable=False)
-    nature = Column(EnumType(ChallengeNature), nullable=False)
-    type = Column(EnumType(ChallengeType), nullable=False)
+    nature = Column(EnumType(ChallengeNature, length=127), nullable=False)
+    type = Column(EnumType(ChallengeType, length=127), nullable=False)
 
     branch_observation_id = Column(
         Integer, ForeignKey("branches_observations.id"), nullable=False

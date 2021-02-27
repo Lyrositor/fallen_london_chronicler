@@ -224,12 +224,12 @@ def record_setting(
 
 def record_opportunities(
         session: Session,
-        area_id: int,
-        setting_id: int,
-        cards_info: Iterable[CardInfo]
+        cards_info: Iterable[CardInfo],
+        area_id: Optional[int],
+        setting_id: Optional[int],
 ) -> List[Storylet]:
     return [
-        record_card(session, area_id, setting_id, card_info)
+        record_card(session, card_info, area_id, setting_id)
         for card_info in cards_info
     ]
 
@@ -241,7 +241,7 @@ def record_area_storylets(
         storylets_info: Iterable[StoryletInfo]
 ) -> List[Storylet]:
     storylets = [
-        record_storylet(session, area_id, setting_id, storylet_info)
+        record_storylet(session, storylet_info, area_id, setting_id)
         for storylet_info in storylets_info
     ]
     for storylet in storylets:
@@ -261,9 +261,9 @@ def record_area_storylets(
 
 def record_storylet(
         session: Session,
-        area_id: int,
-        setting_id: int,
         storylet_info: StoryletInfo,
+        area_id: Optional[int],
+        setting_id: Optional[int],
 ) -> Storylet:
     storylet = Storylet.get_or_create(session, storylet_info.id)
     if storylet_info.canGoBack is not None:
@@ -295,16 +295,21 @@ def record_storylet(
         for branch_info in storylet_info.childBranches:
             storylet.branches.append(record_branch(session, branch_info))
 
-    area = Area.get_or_create(session, area_id)
-    area.storylets.append(storylet)
-    setting = Setting.get_or_create(session, setting_id)
-    setting.storylets.append(storylet)
+    if area_id is not None:
+        area = Area.get_or_create(session, area_id)
+        area.storylets.append(storylet)
+    if setting_id is not None:
+        setting = Setting.get_or_create(session, setting_id)
+        setting.storylets.append(storylet)
 
     return storylet
 
 
 def record_card(
-        session: Session, area_id: int, setting_id: int, card_info: CardInfo
+        session: Session,
+        card_info: CardInfo,
+        area_id: Optional[int],
+        setting_id: Optional[int],
 ) -> Storylet:
     storylet = Storylet.get_or_create(session, card_info.eventId)
     storylet.category = StoryletCategory(card_info.category)
@@ -325,10 +330,12 @@ def record_card(
         ],
     )
 
-    area = Area.get_or_create(session, area_id)
-    area.storylets.append(storylet)
-    setting = Setting.get_or_create(session, setting_id)
-    setting.storylets.append(storylet)
+    if area_id is not None:
+        area = Area.get_or_create(session, area_id)
+        area.storylets.append(storylet)
+    if setting_id is not None:
+        setting = Setting.get_or_create(session, setting_id)
+        setting.storylets.append(storylet)
     return storylet
 
 
@@ -454,8 +461,8 @@ def record_outcome(
         outcome_info: Optional[StoryletBranchOutcomeInfo],
         messages: Optional[List[StoryletBranchOutcomeMessageInfo]],
         redirect: Optional[StoryletInfo],
-        area_id: int,
-        setting_id: int,
+        area_id: Optional[int],
+        setting_id: Optional[int],
 ) -> OutcomeObservation:
     if messages is None:
         messages = []
@@ -482,13 +489,15 @@ def record_outcome(
         if redirect_setting not in redirect_area.settings:
             redirect_area.settings.append(redirect_setting)
     elif redirect_area:
-        setting = Setting.get_or_create(session, setting_id)
-        if setting not in redirect_area.settings:
-            redirect_area.settings.append(setting)
+        if setting_id is not None:
+            setting = Setting.get_or_create(session, setting_id)
+            if setting not in redirect_area.settings:
+                redirect_area.settings.append(setting)
     elif redirect_setting:
-        area = Area.get_or_create(session, area_id)
-        if area not in redirect_setting.areas:
-            redirect_setting.areas.append(area)
+        if area_id is not None:
+            area = Area.get_or_create(session, area_id)
+            if area not in redirect_setting.areas:
+                redirect_setting.areas.append(area)
 
     return record_observation(
         branch.outcome_observations,
@@ -508,9 +517,9 @@ def record_outcome(
         messages=outcome_messages,
         redirect=record_storylet(
             session,
+            redirect,
             redirect_area.id if redirect_area else area_id,
             redirect_setting.id if redirect_setting else setting_id,
-            redirect
         ) if redirect else None,
         redirect_area=redirect_area,
         redirect_setting=redirect_setting

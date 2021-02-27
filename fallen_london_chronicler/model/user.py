@@ -15,11 +15,15 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    api_key = Column(String, nullable=False)
+    name = Column(String(127), nullable=False)
+    api_key = Column(String(127), nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
 
+    current_area_id = Column(Integer, ForeignKey("areas.id"))
+    current_area = relationship("Area")
+    current_setting_id = Column(Integer, ForeignKey("settings.id"))
+    current_setting = relationship("Setting")
     possessions: InstrumentedList[UserPossession] = relationship(
         "UserPossession",
         lazy="selectin",

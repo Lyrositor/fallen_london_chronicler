@@ -8,7 +8,7 @@ from starlette.responses import HTMLResponse
 from fallen_london_chronicler.auth import authorize
 from fallen_london_chronicler.db import get_session
 from fallen_london_chronicler.model import User
-from templates import templated
+from fallen_london_chronicler.web.templates import templated
 
 router = APIRouter()
 

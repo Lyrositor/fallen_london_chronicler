@@ -31,9 +31,9 @@ class OutcomeObservation(Base):
     last_modified = Column(
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
-    name = Column(String)
-    description = Column(String)
-    image = Column(String)
+    name = Column(String(1023))
+    description = Column(String(65535))
+    image = Column(String(1023))
     is_success = Column(Boolean)
     messages = relationship(
         "OutcomeMessage",
@@ -72,9 +72,9 @@ class OutcomeMessage(Base):
     __tablename__ = "outcome_messages"
 
     id = Column(Integer, primary_key=True)
-    type = Column(EnumType(OutcomeMessageType), nullable=False)
-    text = Column(String, nullable=False)
-    image = Column(String)
+    type = Column(EnumType(OutcomeMessageType, length=127), nullable=False)
+    text = Column(String(65535), nullable=False)
+    image = Column(String(127))
     change = Column(Integer)
 
     quality_id = Column(Integer, ForeignKey("qualities.id"))

@@ -7,7 +7,6 @@ from sqlalchemy import Integer, Column, ForeignKey, String, DateTime, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import InstrumentedList
 
-from fallen_london_chronicler.config import config
 from fallen_london_chronicler.model.base import Base, GameEntity
 from fallen_london_chronicler.model.outcome import OutcomeObservation
 from fallen_london_chronicler.model.utils import latest_observation_property
@@ -17,8 +16,8 @@ class Branch(GameEntity):
     __tablename__ = "branches"
 
     action_cost = Column(Integer, default=0)
-    button_text = Column(String, default="Go")
-    image = Column(String, nullable=False)
+    button_text = Column(String(1023), default="Go")
+    image = Column(String(1023), nullable=False)
     ordering = Column(Integer, default=0)
 
     observations: InstrumentedList[BranchObservation] = relationship(
@@ -73,8 +72,8 @@ class BranchObservation(Base):
     last_modified = Column(
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False)
+    name = Column(String(1023), nullable=False)
+    description = Column(String(65535), nullable=False)
     currency_cost = Column(Integer, nullable=False)
 
     challenges = relationship(

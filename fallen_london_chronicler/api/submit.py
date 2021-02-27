@@ -1,3 +1,4 @@
+from typing import Tuple, Optional
 
 from fastapi import APIRouter
 
@@ -7,7 +8,7 @@ from fallen_london_chronicler.aggregator import record_area, \
     update_user_possessions
 from fallen_london_chronicler.auth import authorize
 from fallen_london_chronicler.db import get_session
-from fallen_london_chronicler.model import OutcomeObservation
+from fallen_london_chronicler.model import OutcomeObservation, User
 from fallen_london_chronicler.schema import SubmitResponse, AreaRequest, \
     StoryletListRequest, StoryletViewRequest, StoryletBranchOutcomeRequest, \
     OutcomeSubmitResponse, PossessionsRequest, SettingRequest
@@ -37,9 +38,12 @@ async def possessions(
 @router.post("/area")
 async def area(area_request: AreaRequest) -> SubmitResponse:
     with get_session() as session:
-        if not authorize(session, area_request.apiKey):
+        user = authorize(session, area_request.apiKey)
+        if not user:
             return SubmitResponse(success=False, error="Invalid API key")
-        record_area(session, area_request.area, area_request.settingId)
+        user.current_area = record_area(
+            session, area_request.area, area_request.settingId
+        )
     return SubmitResponse(success=True)
 
 
@@ -48,9 +52,13 @@ async def setting(
         setting_request: SettingRequest
 ) -> SubmitResponse:
     with get_session() as session:
-        if not authorize(session, setting_request.apiKey):
+        user = authorize(session, setting_request.apiKey)
+        if not user:
             return SubmitResponse(success=False, error="Invalid API key")
-        record_setting(session, setting_request.setting, setting_request.areaId)
+        user.current_setting = record_setting(
+            session, setting_request.setting, setting_request.areaId
+        )
+
     return SubmitResponse(success=True)
 
 
@@ -59,13 +67,15 @@ async def opportunities(
         opportunities_request: OpportunitiesRequest
 ) -> SubmitResponse:
     with get_session() as session:
-        if not authorize(session, opportunities_request.apiKey):
+        user = authorize(session, opportunities_request.apiKey)
+        if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        area_id, setting_id = get_location(user, opportunities_request)
         record_opportunities(
             session,
-            opportunities_request.areaId,
-            opportunities_request.settingId,
-            opportunities_request.displayCards
+            opportunities_request.displayCards,
+            area_id,
+            setting_id,
         )
     return SubmitResponse(success=True)
 
@@ -75,13 +85,18 @@ async def storylet_list(
         storylet_list_request: StoryletListRequest
 ) -> SubmitResponse:
     with get_session() as session:
-        if not authorize(session, storylet_list_request.apiKey):
+        user = authorize(session, storylet_list_request.apiKey)
+        if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        area_id, setting_id = get_location(user, storylet_list_request)
+        if area_id is None or setting_id is None:
+            return SubmitResponse(
+                success=False,
+                error="Current area ID or setting ID does not match submitted "
+                      "area ID or setting ID, refresh page"
+            )
         record_area_storylets(
-            session,
-            storylet_list_request.areaId,
-            storylet_list_request.settingId,
-            storylet_list_request.storylets
+            session, area_id, setting_id, storylet_list_request.storylets
         )
     return SubmitResponse(success=True)
 
@@ -91,13 +106,12 @@ async def storylet_view(
         storylet_view_request: StoryletViewRequest
 ) -> SubmitResponse:
     with get_session() as session:
-        if not authorize(session, storylet_view_request.apiKey):
+        user = authorize(session, storylet_view_request.apiKey)
+        if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        area_id, setting_id = get_location(user, storylet_view_request)
         storylet = record_storylet(
-            session,
-            storylet_view_request.areaId,
-            storylet_view_request.settingId,
-            storylet_view_request.storylet,
+            session, storylet_view_request.storylet, area_id, setting_id,
         )
         if storylet_view_request.isLinkingFromOutcomeObservation is not None:
             observation = session.query(OutcomeObservation).get(
@@ -116,6 +130,7 @@ async def storylet_outcome(
         user = authorize(session, storylet_outcome_request.apiKey)
         if not user:
             return OutcomeSubmitResponse(success=False, error="Invalid API key")
+        area_id, setting_id = get_location(user, storylet_outcome_request)
         outcome = record_outcome(
             user=user,
             session=session,
@@ -123,8 +138,8 @@ async def storylet_outcome(
             outcome_info=storylet_outcome_request.endStorylet,
             messages=storylet_outcome_request.messages,
             redirect=storylet_outcome_request.redirect,
-            area_id=storylet_outcome_request.areaId,
-            setting_id=storylet_outcome_request.settingId,
+            area_id=area_id,
+            setting_id=setting_id,
         )
         if storylet_outcome_request.isLinkingFromOutcomeObservation is not None:
             # TODO Test this, does it have the branch ID?
@@ -139,3 +154,14 @@ async def storylet_outcome(
         newAreaId=outcome.redirect_area_id,
         newSettingId=outcome.redirect_setting_id,
     )
+
+
+def get_location(
+        user: User, submit_request
+) -> Tuple[Optional[int], Optional[int]]:
+    area_id = submit_request.areaId \
+        if user.current_area_id == submit_request.areaId else None
+    setting_id = submit_request.settingId \
+        if user.current_setting_id == submit_request.settingId \
+        else None
+    return area_id, setting_id

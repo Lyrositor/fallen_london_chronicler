@@ -19,10 +19,10 @@ class QualityNature(Enum):
 class Quality(GameEntity):
     __tablename__ = "qualities"
 
-    name = Column(String, nullable=False)
-    description = Column(String)
-    category = Column(String, nullable=False)
-    nature = Column(EnumType(QualityNature), nullable=False)
+    name = Column(String(1023), nullable=False)
+    description = Column(String(65535))
+    category = Column(String(1023), nullable=False)
+    nature = Column(EnumType(QualityNature, length=127), nullable=False)
     storylet_id = Column(Integer, ForeignKey("storylets.id"))
     storylet = relationship("Storylet", back_populates="thing")
 
@@ -32,12 +32,12 @@ class QualityRequirement(Base):
 
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, nullable=False)
-    image = Column(String)
+    image = Column(String(127))
     is_cost = Column(Boolean, nullable=False)
     required_quantity_min = Column(Integer)
     required_quantity_max = Column(Integer)
-    required_values = Column(String)
-    fallback_text = Column(String)
+    required_values = Column(String(65535))
+    fallback_text = Column(String(65535))
 
     @declared_attr
     def quality_id(self):

@@ -19,10 +19,10 @@ class AreaType(Enum):
 class Area(GameEntity):
     __tablename__ = "areas"
 
-    name = Column(String)
-    description = Column(String)
-    image = Column(String)
-    type = Column(EnumType(AreaType))
+    name = Column(String(1023))
+    description = Column(String(65535))
+    image = Column(String(1023))
+    type = Column(EnumType(AreaType, length=127))
     storylets = relationship(
         "Storylet",
         secondary=areas_storylets,

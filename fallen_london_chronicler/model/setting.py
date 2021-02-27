@@ -9,7 +9,7 @@ from fallen_london_chronicler.model.secondaries import areas_settings, \
 class Setting(GameEntity):
     __tablename__ = "settings"
 
-    name = Column(String)
+    name = Column(String(1023))
     can_change_outfit = Column(Boolean)
     can_travel = Column(Boolean)
     is_infinite_draw = Column(Boolean)

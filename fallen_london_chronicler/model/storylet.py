@@ -9,7 +9,6 @@ from sqlalchemy import Integer, Column, Enum as EnumType, ForeignKey, Boolean, \
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import InstrumentedList
 
-from fallen_london_chronicler.config import config
 from fallen_london_chronicler.model.base import Base, GameEntity
 from fallen_london_chronicler.model.secondaries import areas_storylets, \
     settings_storylets
@@ -68,12 +67,12 @@ class Storylet(GameEntity):
     __tablename__ = "storylets"
 
     can_go_back = Column(Boolean)
-    category = Column(EnumType(StoryletCategory))
-    distribution = Column(EnumType(StoryletDistribution))
-    frequency = Column(EnumType(StoryletFrequency))
-    stickiness = Column(EnumType(StoryletStickiness))
-    image = Column(String)
-    urgency = Column(EnumType(StoryletUrgency))
+    category = Column(EnumType(StoryletCategory, length=127))
+    distribution = Column(EnumType(StoryletDistribution, length=127))
+    frequency = Column(EnumType(StoryletFrequency, length=127))
+    stickiness = Column(EnumType(StoryletStickiness, length=127))
+    image = Column(String(1023))
+    urgency = Column(EnumType(StoryletUrgency, length=127))
     is_autofire = Column(Boolean, default=False)
     is_card = Column(Boolean, default=False)
     is_top_level = Column(Boolean, default=False)
@@ -159,9 +158,9 @@ class StoryletObservation(Base):
     last_modified = Column(
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
-    name = Column(String)
-    description = Column(String)
-    teaser = Column(String)
+    name = Column(String(1023))
+    description = Column(String(65535))
+    teaser = Column(String(65535))
 
     quality_requirements = relationship(
         "StoryletQualityRequirement",
