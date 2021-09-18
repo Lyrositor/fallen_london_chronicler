@@ -8,4 +8,5 @@ from fallen_london_chronicler.model import User
 def authorize(session: Session, api_key: str) -> Optional[User]:
     if config.require_api_key and not api_key:
         return None
-    return User.get_by_api_key(session, api_key)
+    user = User.get_by_api_key(session, api_key)
+    return user if user.is_active else None

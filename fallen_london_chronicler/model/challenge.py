@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from enum import Enum
 
-from sqlalchemy import Integer, Column, Enum as EnumType, ForeignKey, String
+from sqlalchemy import Integer, Column, Enum as EnumType, ForeignKey, String, \
+    Text
 from sqlalchemy.orm import relationship
 
 from fallen_london_chronicler.model.base import Base
@@ -24,7 +25,7 @@ class Challenge(Base):
     game_id = Column(Integer, nullable=False)
     category = Column(String(1023), nullable=False)
     name = Column(String(1023), nullable=False)
-    description = Column(String(65535), nullable=False)
+    description = Column(Text, nullable=False)
     image = Column(String(1023), nullable=False)
     target = Column(Integer, nullable=False)
     nature = Column(EnumType(ChallengeNature, length=127), nullable=False)
@@ -36,3 +37,6 @@ class Challenge(Base):
     branch_observation = relationship(
         "BranchObservation", back_populates="challenges"
     )
+
+    def __repr__(self) -> str:
+        return f"<Challenge id={self.id} name={self.name}>"

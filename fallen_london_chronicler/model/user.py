@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import string
+from dataclasses import dataclass
 from typing import Optional
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
@@ -62,6 +63,9 @@ class User(Base):
         session.add(user)
         return user
 
+    def __repr__(self) -> str:
+        return f"<User id={self.id} name={self.name}>"
+
 
 class UserPossession(Base):
     __tablename__ = "users_possessions"
@@ -76,6 +80,20 @@ class UserPossession(Base):
 
     level = Column(Integer, nullable=False)
     progress_as_percentage = Column(Integer, nullable=False)
+
+    def to_state(self) -> PossessionState:
+        return PossessionState(
+            quality=self.quality,
+            level=self.level,
+            progress_as_percentage=self.progress_as_percentage,
+        )
+
+
+@dataclass
+class PossessionState:
+    quality: Quality
+    level: int
+    progress_as_percentage: int
 
     @property
     def cp(self):

@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple, Optional
 
 from fastapi import APIRouter
@@ -25,6 +26,7 @@ async def possessions(
         user = authorize(session, possessions_request.apiKey)
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        logging.info(f"{{{user.name}}} Update possessions")
         update_user_possessions(
             session,
             user,
@@ -41,6 +43,10 @@ async def area(area_request: AreaRequest) -> SubmitResponse:
         user = authorize(session, area_request.apiKey)
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        logging.info(
+            f"{{{user.name}}} Submitting area {area_request.area.name} "
+            f"({area_request.area.id})"
+        )
         user.current_area = record_area(
             session, area_request.area, area_request.settingId
         )
@@ -55,6 +61,10 @@ async def setting(
         user = authorize(session, setting_request.apiKey)
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        logging.info(
+            f"{{{user.name}}} Submitting setting "
+            f"{setting_request.setting.name} ({setting_request.setting.id})"
+        )
         user.current_setting = record_setting(
             session, setting_request.setting, setting_request.areaId
         )
@@ -70,6 +80,11 @@ async def opportunities(
         user = authorize(session, opportunities_request.apiKey)
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
+        logging.info(
+            f"{{{user.name}}} Submitting opportunities in "
+            f"area {opportunities_request.areaId}/"
+            f"setting {opportunities_request.settingId}"
+        )
         area_id, setting_id = get_location(user, opportunities_request)
         record_opportunities(
             session,
@@ -89,6 +104,11 @@ async def storylet_list(
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
         area_id, setting_id = get_location(user, storylet_list_request)
+        logging.info(
+            f"{{{user.name}}} Submitting storylets in "
+            f"area {storylet_list_request.areaId}/"
+            f"setting {storylet_list_request.settingId}"
+        )
         if area_id is None or setting_id is None:
             return SubmitResponse(
                 success=False,
@@ -110,6 +130,13 @@ async def storylet_view(
         if not user:
             return SubmitResponse(success=False, error="Invalid API key")
         area_id, setting_id = get_location(user, storylet_view_request)
+        logging.info(
+            f"{{{user.name}}} Submitting storylet "
+            f"{storylet_view_request.storylet.name} "
+            f"({storylet_view_request.storylet.id}) in "
+            f"area {storylet_view_request.areaId}/"
+            f"setting {storylet_view_request.settingId}"
+        )
         storylet = record_storylet(
             session, storylet_view_request.storylet, area_id, setting_id,
         )
@@ -131,6 +158,11 @@ async def storylet_outcome(
         if not user:
             return OutcomeSubmitResponse(success=False, error="Invalid API key")
         area_id, setting_id = get_location(user, storylet_outcome_request)
+        logging.info(
+            f"{{{user.name}}} Submitting storylet outcome in "
+            f"area {storylet_outcome_request.areaId}/"
+            f"setting {storylet_outcome_request.settingId}"
+        )
         outcome = record_outcome(
             user=user,
             session=session,

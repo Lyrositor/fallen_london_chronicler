@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Iterable, Type, TypeVar, Dict, List
 
 from sqlalchemy import inspect
@@ -41,9 +42,12 @@ def record_observation(
                 if value is None:
                     continue
                 setattr(observation, name, value)
+            observation.last_modified = datetime.utcnow()
             return observation
     new_observation = observation_cls(**values)
     observations.append(new_observation)
+    import pprint
+    pprint.pprint(observations)
     return new_observation
 
 

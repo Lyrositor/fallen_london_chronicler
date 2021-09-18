@@ -5,7 +5,7 @@ from enum import Enum
 from typing import List
 
 from sqlalchemy import Integer, Column, Enum as EnumType, ForeignKey, Boolean, \
-    String, DateTime, func, Table
+    String, DateTime, func, Table, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -159,8 +159,8 @@ class StoryletObservation(Base):
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
     name = Column(String(1023))
-    description = Column(String(65535))
-    teaser = Column(String(65535))
+    description = Column(Text)
+    teaser = Column(Text)
 
     quality_requirements = relationship(
         "StoryletQualityRequirement",
@@ -170,3 +170,11 @@ class StoryletObservation(Base):
     )
     storylet_id = Column(Integer, ForeignKey("storylets.id"))
     storylet = relationship("Storylet", back_populates="observations")
+
+    def __repr__(self) -> str:
+        quality_requirements = ", ".join(
+            str(qr) for qr in self.quality_requirements
+        )
+        return (
+            f"<StoryletObservation id={self.id} name={self.name} "
+            f"quality_requirements=[{quality_requirements}]>")

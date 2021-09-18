@@ -294,14 +294,20 @@ def record_storylet(
     )
     if storylet_info.childBranches is not None:
         for branch_info in storylet_info.childBranches:
-            storylet.branches.append(record_branch(session, branch_info))
+            branch = record_branch(session, branch_info)
+            if branch not in storylet.branches:
+                storylet.branches.append(branch)
 
     if area_id is not None:
         area = Area.get_or_create(session, area_id)
-        area.storylets.append(storylet)
+        if storylet not in area.storylets:
+            # TODO Remove when bug is figured out
+            print(f"Adding {storylet} to {', '.join(str(s.id) for s in area.storylets)}")
+            area.storylets.append(storylet)
     if setting_id is not None:
         setting = Setting.get_or_create(session, setting_id)
-        setting.storylets.append(storylet)
+        if storylet not in setting.storylets:
+            setting.storylets.append(storylet)
 
     return storylet
 
@@ -333,10 +339,12 @@ def record_card(
 
     if area_id is not None:
         area = Area.get_or_create(session, area_id)
-        area.storylets.append(storylet)
+        if storylet not in area.storylets:
+            area.storylets.append(storylet)
     if setting_id is not None:
         setting = Setting.get_or_create(session, setting_id)
-        setting.storylets.append(storylet)
+        if setting not in setting.storylets:
+            setting.storylets.append(storylet)
     return storylet
 
 
@@ -548,8 +556,11 @@ def record_outcome_message(
             storylet_id=info.possession.useEventId,
         )
         message.quality_id = message.quality.id
-        old_state = user.get_possession(message.quality_id)
-        new_state = update_user_possession(session, user, info.possession)
+        possession = user.get_possession(message.quality_id)
+        old_state = possession.to_state() if possession else None
+        new_state = update_user_possession(
+            session, user, info.possession
+        ).to_state()
 
         if message.type == OutcomeMessageType.STANDARD_QUALITY_CHANGE:
             message.change = (

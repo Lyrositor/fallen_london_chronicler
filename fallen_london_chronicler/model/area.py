@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from sqlalchemy import Column, Enum as EnumType, String
+from sqlalchemy import Column, Enum as EnumType, String, Text
 from sqlalchemy.orm import relationship
 
 from fallen_london_chronicler.model.base import GameEntity
@@ -20,7 +20,7 @@ class Area(GameEntity):
     __tablename__ = "areas"
 
     name = Column(String(1023))
-    description = Column(String(65535))
+    description = Column(Text)
     image = Column(String(1023))
     type = Column(EnumType(AreaType, length=127))
     storylets = relationship(
@@ -38,5 +38,8 @@ class Area(GameEntity):
     )
 
     @property
-    def url(self):
+    def url(self) -> str:
         return f"/area/{self.id}"
+
+    def __repr__(self) -> str:
+        return f"<Area id={self.id} name={self.name}>"

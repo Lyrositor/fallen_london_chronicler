@@ -15,7 +15,7 @@
   <div class="section-body section-body-spaced">
     <div>
       <h3>{{area.name}}</h3>
-      <p>{{area.description}}</p>
+      {% if area.description %}<p>{{area.description}}</p>{% endif %}
     </div>
     <div class="buttons-group">
       <a href="{{area.url|format_url}}" class="section-btn btn btn-primary">Go</a>

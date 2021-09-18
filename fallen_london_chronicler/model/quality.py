@@ -4,7 +4,7 @@ import json
 from enum import Enum
 
 from sqlalchemy import Integer, Column, Enum as EnumType, ForeignKey, String, \
-    Boolean
+    Boolean, Text
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 
@@ -20,11 +20,14 @@ class Quality(GameEntity):
     __tablename__ = "qualities"
 
     name = Column(String(1023), nullable=False)
-    description = Column(String(65535))
+    description = Column(Text)
     category = Column(String(1023), nullable=False)
     nature = Column(EnumType(QualityNature, length=127), nullable=False)
     storylet_id = Column(Integer, ForeignKey("storylets.id"))
     storylet = relationship("Storylet", back_populates="thing")
+
+    def __repr__(self) -> str:
+        return f"<Quality id={self.id} name={self.name}>"
 
 
 class QualityRequirement(Base):
@@ -36,8 +39,8 @@ class QualityRequirement(Base):
     is_cost = Column(Boolean, nullable=False)
     required_quantity_min = Column(Integer)
     required_quantity_max = Column(Integer)
-    required_values = Column(String(65535))
-    fallback_text = Column(String(65535))
+    required_values = Column(Text)
+    fallback_text = Column(Text)
 
     @declared_attr
     def quality_id(self):
@@ -73,6 +76,10 @@ class QualityRequirement(Base):
         else:
             text = self.fallback_text
         return text.replace('"', r'\"')
+
+    def __repr__(self) -> str:
+        return \
+            f"<{self.__class__.__name__} id={self.id} quality={self.quality}>"
 
 
 class BranchQualityRequirement(QualityRequirement):

@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import Column, Enum as EnumType, Integer, DateTime, func, \
-    String, ForeignKey, Boolean
+    String, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 
 from fallen_london_chronicler.model import Base
@@ -32,7 +32,7 @@ class OutcomeObservation(Base):
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
     name = Column(String(1023))
-    description = Column(String(65535))
+    description = Column(Text)
     image = Column(String(1023))
     is_success = Column(Boolean)
     messages = relationship(
@@ -67,13 +67,16 @@ class OutcomeObservation(Base):
         foreign_keys=branch_id
     )
 
+    def __repr__(self) -> str:
+        return f"<OutcomeObservation id={self.id} name={self.name}>"
+
 
 class OutcomeMessage(Base):
     __tablename__ = "outcome_messages"
 
     id = Column(Integer, primary_key=True)
     type = Column(EnumType(OutcomeMessageType, length=127), nullable=False)
-    text = Column(String(65535), nullable=False)
+    text = Column(Text, nullable=False)
     image = Column(String(127))
     change = Column(Integer)
 
@@ -85,3 +88,6 @@ class OutcomeMessage(Base):
     outcome_observation = relationship(
         "OutcomeObservation", back_populates="messages"
     )
+
+    def __repr__(self) -> str:
+        return f"<OutcomeMessage id={self.id} type={self.type.value} text={self.text}>"

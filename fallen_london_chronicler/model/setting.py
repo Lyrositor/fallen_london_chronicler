@@ -28,3 +28,6 @@ class Setting(GameEntity):
     outcome_redirects = relationship(
         "OutcomeObservation", back_populates="redirect_setting"
     )
+
+    def __repr__(self) -> str:
+        return f"<Setting id={self.id} name={self.name}>"

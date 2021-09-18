@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Integer, Column, ForeignKey, String, DateTime, func
+from sqlalchemy import Integer, Column, ForeignKey, String, DateTime, func, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -64,6 +64,9 @@ class Branch(GameEntity):
             self.observations, "quality_requirements"
         )
 
+    def __repr__(self) -> str:
+        return f"<Branch id={self.id} name={self.name}>"
+
 
 class BranchObservation(Base):
     __tablename__ = "branches_observations"
@@ -73,7 +76,7 @@ class BranchObservation(Base):
         DateTime, server_default=func.now(), onupdate=datetime.utcnow
     )
     name = Column(String(1023), nullable=False)
-    description = Column(String(65535), nullable=False)
+    description = Column(Text, nullable=False)
     currency_cost = Column(Integer, nullable=False)
 
     challenges = relationship(
