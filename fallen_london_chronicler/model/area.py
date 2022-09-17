@@ -14,6 +14,7 @@ class AreaType(Enum):
     DISTRICT = "District"
     LANDMARK = "Landmark"
     LODGINGS = "Lodgings"
+    ROOT = "Root"
 
 
 class Area(GameEntity):

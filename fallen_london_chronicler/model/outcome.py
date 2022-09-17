@@ -16,6 +16,7 @@ class OutcomeMessageType(Enum):
     OUTFIT_CHANGEABILITY = "OutfitChangeabilityMessage"
     LIVING_STORY_STARTED = "LivingStoryStartedMessage"
     MAP_SHOULD_UPDATE = "MapShouldUpdateMessage"
+    PLAN_COMPLETED_MESSAGE = "PlanCompletedMessage"
     PYRAMID_QUALITY_CHANGE = "PyramidQualityChangeMessage"
     QUALITY_CAP = "QualityCapMessage"
     QUALITY_EXPLICITLY_SET = "QualityExplicitlySetMessage"

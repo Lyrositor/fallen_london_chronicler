@@ -46,8 +46,6 @@ def record_observation(
             return observation
     new_observation = observation_cls(**values)
     observations.append(new_observation)
-    import pprint
-    pprint.pprint(observations)
     return new_observation
 
 

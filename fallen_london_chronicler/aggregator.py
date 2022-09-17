@@ -56,8 +56,8 @@ TOOLTIPS_AT_LEAST_ONE = (
     ),
     re.compile(
         r"^You unlocked this with (?:an? )?"
-        r"<span class='quality-name'>(?P<quality>.+)</span> "
-        r"<em>\(you have (?P<current>\d+) in all\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"<em>\s*\(you have (?P<current>\d+) in all\)\s*</em>$"
     ),
     re.compile(
         r"^You can't do this when you have any "
@@ -69,22 +69,22 @@ TOOLTIPS_AT_LEAST_ONE = (
 TOOLTIPS_MINIMUM = (
     re.compile(
         r"^You unlocked this with "
-        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+) "
-        r"<em>\(you needed (?P<quantity_min>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)\s*"
+        r"<em>\s*\(you needed (?P<quantity_min>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You unlocked this with (?P<current>\d+) "
-        r"<span class='quality-name'>(?P<quality>.+)</span> "
-        r"<em>\(you needed (?P<quantity_min>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"<em>\s*\(you needed (?P<quantity_min>\d+)\)\s*</em>$"
     ),
     re.compile(
-        r"^You need <span class='quality-name'>(?P<quality>.+)</span> "
-        r"(?P<quantity_min>\d+)<em> \(you have (?P<current>\d+)\)</em>$"
+        r"^You need <span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"(?P<quantity_min>\d+)<em>\s*\(you have (?P<current>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You need (?P<quantity_min>\d+) "
-        r"<span class='quality-name'>(?P<quality>.+)</span> "
-        r"<em>\(you have (?P<current>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"<em>\s*\(you have (?P<current>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You need (?P<quantity_min>\d+) "
@@ -98,52 +98,51 @@ TOOLTIPS_MINIMUM = (
 TOOLTIPS_MAXIMUM = (
     re.compile(
         r"^You can't do this when you have <span class='quality-name'>"
-        r"(?P<quality>.+)</span> higher than (?P<quantity_max>\d+)"
-        r"<em> \(you have (?P<current>\d+)\)</em>$"
+        r"(?P<quality>.+)</span> higher than (?P<quantity_max>\d+)\s*"
+        r"<em>\s*\(you have (?P<current>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You unlocked this with "
-        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+) "
-        r"<em>\(you needed (?P<quantity_max>\d+) at most\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)\s*"
+        r"<em>\s*\(you needed (?P<quantity_max>\d+) at most\)\s*</em>$"
     ),
-
     re.compile(
         r"^You unlocked this by not having "
-        r"<span class='quality-name'>(?P<quality>.+)</span> "
-        r"<em>\(you needed (?P<quantity_max>\d+) at most\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"<em>\s*\(you needed (?P<quantity_max>\d+) at most\)\s*</em>$"
     )
 )
 TOOLTIPS_EXACTLY = (
     re.compile(
         r"^You unlocked this with (?:an? )?"
-        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)"
-        r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)\s*"
+        r"<em>\s*\(you needed exactly (?P<quantity>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You need exactly "
-        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<quantity>\d+)"
-        r"(?:<em> \(you have (?P<current>\d+)\)</em>)?$"
+        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<quantity>\d+)\s*"
+        r"(?:<em>\s*\(you have (?P<current>\d+)\)\s*</em>)?$"
     ),
     re.compile(
-        r"^You need <span class='quality-name'>(?P<quality>.+)</span> "
+        r"^You need <span class='quality-name'>(?P<quality>.+)</span>\s*"
         r"exactly (?P<quantity>\d+)$"
     ),
     re.compile(
         r"^You unlocked this with any "
-        r"<span class='quality-name'>(?P<quality>.+)</span>"
-        r"<em> \(you needed exactly (?P<quantity>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span>\s*"
+        r"<em>\s*\(you needed exactly (?P<quantity>\d+)\)\s*</em>$"
     ),
 )
 TOOLTIPS_RANGE = (
     re.compile(
         r"^You unlocked this with "
-        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)"
-        r"<em> \(you needed (?P<quantity_min>\d+)-(?P<quantity_max>\d+)\)</em>$"
+        r"<span class='quality-name'>(?P<quality>.+)</span> (?P<current>\d+)\s*"
+        r"<em>\s*\(you needed (?P<quantity_min>\d+)-(?P<quantity_max>\d+)\)\s*</em>$"
     ),
     re.compile(
         r"^You need <span class='quality-name'>(?P<quality>.+)</span> "
-        r"(?P<quantity_min>\d+)-(?P<quantity_max>\d+)"
-        r"(?:<em> \(you have (?P<current>\d+)\)</em>)?$"
+        r"(?P<quantity_min>\d+)-(?P<quantity_max>\d+)\s*"
+        r"(?:<em>\s*\(you have (?P<current>\d+)\)\s*</em>)?$"
     )
 )
 TOOLTIPS_WORDY = (

@@ -11,6 +11,7 @@ from fallen_london_chronicler.model.base import Base
 
 class ChallengeNature(Enum):
     STATUS = "Status"
+    THING = "Thing"
 
 
 class ChallengeType(Enum):

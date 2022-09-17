@@ -24,6 +24,7 @@
 </ol>
 <h2>Setup</h2>
 <p>To start recording, you will need to add a userscript to your browser.</p>
+{% if require_api_key %}
 <ol>
   <li>Get an API key from the site operators - you cannot submit data without an API key</li>
   <li>Download a compatible userscript manager extension for your browser. <strong>Violentmonkey</strong> is recommended (available for <a href="https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/">Firefox</a>)</li>
@@ -35,6 +36,13 @@
   </li>
   <li>Add your userscript to your browser through your downloaded userscript manager</li>
 </ol>
+{% else %}
+<ol>
+  <li>Download a compatible userscript manager extension for your browser. <strong>Violentmonkey</strong> is recommended (available for <a href="https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/">Firefox</a>)</li>
+  <li>Click "Go" to get your userscript: <a href="{{root_url + '/userscript.js'}}" class="btn btn-primary">Go</a></li>
+  <li>Add your userscript to your browser through your downloaded userscript manager</li>
+</ol>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

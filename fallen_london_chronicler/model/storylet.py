@@ -24,11 +24,16 @@ storylets_order = Table(
 
 class StoryletCategory(Enum):
     AMBITION = "Ambition"
+    BLUE = "Blue"
     EPISODIC = "Episodic"
+    FANCY = "Fancy"
     GOLD = "Gold"
     ITEM_USE = "ItemUse"
+    LIVING_WORLD = "LivingWorld"
+    ONGOING = "Ongoing"
     QUESTICLE_START = "QuesticleStart"
     QUESTICLE_STEP = "QuesticleStep"
+    PREMIUM = "Premium"
     SEASONAL = "Seasonal"
     SINISTER = "Sinister"
     TRAVEL = "Travel"
@@ -115,7 +120,10 @@ class Storylet(GameEntity):
     def color(self) -> str:
         if self.category == StoryletCategory.SINISTER:
             return "black"
-        elif self.category == StoryletCategory.GOLD:
+        elif self.category in (
+                StoryletCategory.GOLD,
+                StoryletCategory.PREMIUM
+        ):
             return "gold"
         elif self.category in (
                 StoryletCategory.AMBITION, StoryletCategory.SEASONAL
@@ -124,9 +132,16 @@ class Storylet(GameEntity):
         elif self.category in (
                 StoryletCategory.QUESTICLE_START,
                 StoryletCategory.QUESTICLE_STEP,
-                StoryletCategory.EPISODIC
+                StoryletCategory.EPISODIC,
+                StoryletCategory.ONGOING
         ):
             return "bronze"
+        elif self.category in (StoryletCategory.LIVING_WORLD,):
+            return "green"
+        elif self.category in (StoryletCategory.BLUE,):
+            return "blue"
+        elif self.category == StoryletCategory.FANCY:
+            return "purple"
         return "white"
 
     @property

@@ -220,6 +220,18 @@ a:hover, a:active, a:focus {
     border-color: saddlebrown;
 }
 
+.section-icon-blue {
+    border-color: #648a7b;
+}
+
+.section-icon-green {
+    border-color: green;
+}
+
+.section-icon-purple {
+    border-color: mediumpurple;
+}
+
 .section-icon-white {
     border-color: white;
 }

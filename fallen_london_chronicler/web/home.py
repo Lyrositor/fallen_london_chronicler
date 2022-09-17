@@ -29,6 +29,7 @@ async def home(request: Request):
         "reset_data_enable": config.reset_data_enable,
         "html_export_enable": config.html_export_enable,
         "google_docs_export_enable": config.google_docs_export_enable,
+        "require_api_key": config.require_api_key
     }
 
 

@@ -98,6 +98,6 @@ app = create_app()
 
 @app.on_event("startup")
 def on_startup():
-    get_or_cache_image(ImageType.ICON_SMALL, "question")
+    get_or_cache_image(ImageType.ICON, "question")
     if not config.debug:
         webbrowser.open(config.root_url, 2)

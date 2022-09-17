@@ -7,10 +7,10 @@ import requests
 
 from fallen_london_chronicler.web import CACHED_IMAGES_PATH
 
-BASE_IMAGE_URL = "https://images.fallenlondon.com/images"
+BASE_IMAGE_URL = "https://images.fallenlondon.com"
 HEADERS_URL = f"{BASE_IMAGE_URL}/headers/{{0}}.png"
 ICONS_URL = f"{BASE_IMAGE_URL}/icons/{{0}}.png"
-ICONS_SMALL_URL = f"{BASE_IMAGE_URL}/icons_small/{{0}}.png"
+ICONS_SMALL_URL = f"{BASE_IMAGE_URL}/icons/{{0}}small.png"
 
 
 class ImageType(Enum):
@@ -43,12 +43,10 @@ def cache_image(image_type: ImageType, image_id: str) -> str:
 
 def get_path(image_type: ImageType, image_id: str) -> str:
     if image_type == ImageType.HEADER:
-        path = "/headers/"
+        return f"/headers/{image_id}.png"
     elif image_type == ImageType.ICON:
-        path = "/icons/"
+        return f"/icons/{image_id}.png"
     elif image_type == ImageType.ICON_SMALL:
-        path = "/icons_small/"
+        return f"/icons/{image_id}small.png"
     else:
         raise ValueError(f"Unknown image type: {image_type.value}")
-    path += f"{image_id}.png"
-    return path
